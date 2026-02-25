@@ -433,6 +433,7 @@ export type Database = {
           created_at: string
           id: string
           job_id: string
+          pitch_video_id: string | null
           status: string
           updated_at: string
         }
@@ -442,6 +443,7 @@ export type Database = {
           created_at?: string
           id?: string
           job_id: string
+          pitch_video_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -451,6 +453,7 @@ export type Database = {
           created_at?: string
           id?: string
           job_id?: string
+          pitch_video_id?: string | null
           status?: string
           updated_at?: string
         }

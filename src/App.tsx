@@ -58,7 +58,7 @@ const App = () => (
           <Suspense fallback={
             <div className="min-h-dvh flex flex-col items-center justify-center">
               <div className="glass-panel p-8 rounded-2xl">
-                <RocketLoader indeterminate label="Loading Donjo..." />
+                <RocketLoader indeterminate label="Loading Fuse..." />
               </div>
             </div>
           }>

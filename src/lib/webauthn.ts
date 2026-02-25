@@ -5,7 +5,7 @@
  */
 
 const STORAGE_KEY = 'donjo_webauthn_credentials';
-const RP_NAME = 'Donjo Startup Garage';
+const RP_NAME = 'Fuse';
 const RP_ID = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
 
 export interface StoredCredential {

@@ -124,7 +124,7 @@ export default function Ventures() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-charcoal">Venture Gallery</h1>
-            <p className="text-cool-grey text-sm">Startup Garage Nairobi</p>
+            <p className="text-cool-grey text-sm">Fuse</p>
           </div>
           {isAuthenticated && (
             <Button onClick={() => navigate('/apply')} className="neo-extruded bg-primary hover:bg-primary/90">
@@ -184,7 +184,7 @@ export default function Ventures() {
             </div>
             <h2 className="text-2xl font-bold text-charcoal mb-2">No ventures yet</h2>
             <p className="text-cool-grey mb-6">
-              Be the first to apply to Startup Garage Nairobi
+              Be the first to apply
             </p>
             <Button onClick={() => navigate('/apply')}>
               <Plus className="h-4 w-4 mr-2" />

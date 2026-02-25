@@ -68,7 +68,7 @@ export function ApplicantDossierPDF({ applicants, title = 'Applicant Dossier' }:
       <Page size="A4" style={styles.page}>
         <Text style={styles.title}>{title}</Text>
         <Text style={{ marginBottom: 10, fontSize: 9, color: '#64748b' }}>
-          High-density applicant summary — Donjo Startup Garage
+          High-density applicant summary — Fuse
         </Text>
         <View style={styles.table}>
           <View style={styles.tableHeader}>

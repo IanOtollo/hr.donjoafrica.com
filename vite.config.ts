@@ -28,10 +28,10 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "logo.svg", "mask-icon.svg"],
+      includeAssets: ["fuse-logo.png", "favicon.svg", "logo.svg", "mask-icon.svg"],
       manifest: {
-        name: "Donjo - Prove Your Skills, Get Hired",
-        short_name: "Donjo",
+        name: "Fuse - Prove Your Skills, Get Hired",
+        short_name: "Fuse",
         description: "Replace your CV with short video portfolios. Prove real skills and get discovered by top employers faster.",
         theme_color: "#0a0a0a",
         background_color: "#0a0a0a",
@@ -41,15 +41,15 @@ export default defineConfig(({ mode }) => ({
         start_url: "/",
         icons: [
           {
-            src: "/logo.svg",
-            sizes: "any",
-            type: "image/svg+xml",
+            src: "/fuse-logo.png",
+            sizes: "512x512",
+            type: "image/png",
             purpose: "any",
           },
           {
-            src: "/favicon.svg",
-            sizes: "any",
-            type: "image/svg+xml",
+            src: "/fuse-logo.png",
+            sizes: "512x512",
+            type: "image/png",
             purpose: "maskable",
           },
         ],

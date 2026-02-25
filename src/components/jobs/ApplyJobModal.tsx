@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Play, Send, X, Video } from 'lucide-react';
+import { Play, Send, X, Video, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +11,8 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { VideoPitchRecorder } from '@/components/apply/VideoPitchRecorder';
+import { useVideoUpload } from '@/hooks/useVideoUpload';
 
 interface Video {
   id: string;
@@ -33,11 +35,15 @@ interface ApplyJobModalProps {
 
 export function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalProps) {
   const { user, profile } = useAuth();
+  const { uploadVideo } = useVideoUpload();
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideoIds, setSelectedVideoIds] = useState<string[]>([]);
   const [coverMessage, setCoverMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Job-specific pitch: either record/upload new or select from portfolio
+  const [pitchMode, setPitchMode] = useState<'choose' | 'record' | 'done'>('choose');
+  const [pitchVideoBlob, setPitchVideoBlob] = useState<Blob | null>(null);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -45,8 +51,16 @@ export function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalProps) {
     }
   }, [isOpen, user]);
 
+  const resetPitchState = () => {
+    setPitchMode('choose');
+    setPitchVideoBlob(null);
+  };
+
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      resetPitchState();
+      return;
+    }
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
@@ -76,19 +90,57 @@ export function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalProps) {
     );
   };
 
+  const hasVideo = pitchVideoBlob || selectedVideoIds.length > 0;
+  const videoRequired = !!job.video_prompt?.trim();
+
   const handleSubmit = async () => {
     if (!user) {
       toast.error('Please log in to apply');
+      return;
+    }
+    if (videoRequired && !hasVideo) {
+      toast.error('A video pitch is required for this role. Record one or select from your portfolio.');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
+      let pitchVideoId: string | null = null;
+
+      if (pitchVideoBlob) {
+        const videoUrl = await uploadVideo(pitchVideoBlob, user.id);
+        if (!videoUrl) {
+          toast.error('Failed to upload video');
+          setIsSubmitting(false);
+          return;
+        }
+        const { data: videoRow, error: videoErr } = await supabase
+          .from('videos')
+          .insert({
+            user_id: user.id,
+            title: `Pitch for ${job.title}`,
+            description: `Video pitch for ${job.title} at ${job.company_name || 'Company'}`,
+            video_url: videoUrl,
+            is_private: false,
+          })
+          .select('id')
+          .single();
+        if (videoErr || !videoRow) {
+          toast.error('Failed to save video');
+          setIsSubmitting(false);
+          return;
+        }
+        pitchVideoId = videoRow.id;
+      } else if (selectedVideoIds.length > 0) {
+        pitchVideoId = selectedVideoIds[0];
+      }
+
       const { error } = await supabase.from('job_applications').insert({
         job_id: job.id,
         applicant_id: user.id,
         cover_message: coverMessage || null,
+        pitch_video_id: pitchVideoId,
       });
 
       if (error) {
@@ -102,6 +154,7 @@ export function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalProps) {
         onClose();
         setCoverMessage('');
         setSelectedVideoIds([]);
+        resetPitchState();
       }
     } catch (error) {
       console.error('Error applying to job:', error);
@@ -175,63 +228,113 @@ export function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalProps) {
                   </div>
                 )}
 
-                {/* Video Portfolio Section */}
+                {/* Video Pitch Section — Record new or select from portfolio */}
                 <div className="space-y-2 pointer-events-auto z-50 relative">
                   <Label className="flex items-center gap-2 text-slate-200 font-sans">
                     <Video className="h-4 w-4" />
-                    Your Video Portfolio
+                    {job.video_prompt ? 'Video Pitch (required)' : 'Video Pitch (optional)'}
                   </Label>
 
-                  {isLoading ? (
-                    <div className="text-sm text-slate-400 py-4 text-center font-sans">
-                      Loading your videos...
+                  {pitchMode === 'record' ? (
+                    <div className="space-y-3">
+                      <VideoPitchRecorder
+                        onVideoReady={(blob) => {
+                          setPitchVideoBlob(blob);
+                          setPitchMode('done');
+                        }}
+                        maxDuration={60}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-400"
+                        onClick={() => setPitchMode('choose')}
+                      >
+                        ← Back
+                      </Button>
                     </div>
-                  ) : videos.length === 0 ? (
-                    <div className="text-sm text-slate-400 py-4 text-center border border-dashed border-slate-700 rounded-[2px] font-sans">
-                      <Video className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>No videos yet. Create videos to showcase your skills!</p>
+                  ) : pitchMode === 'done' && pitchVideoBlob ? (
+                    <div className="border border-emerald-500/30 rounded-[2px] p-3 bg-emerald-500/5">
+                      <p className="text-sm text-emerald-400 font-medium flex items-center gap-2">
+                        <Video className="h-4 w-4" />
+                        Video ready
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1">Your pitch will be attached to this application.</p>
+                      <Button variant="outline" size="sm" className="mt-2" onClick={resetPitchState}>
+                        Change video
+                      </Button>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-3 gap-2 pr-4">
-                      {videos.map((video) => (
-                        <Card
-                          key={video.id}
-                          className={cn(
-                            'relative aspect-[9/16] overflow-hidden cursor-pointer transition-all rounded-[2px] border-slate-700 bg-slate-900',
-                            selectedVideoIds.includes(video.id)
-                              ? 'ring-2 ring-emerald-500'
-                              : 'hover:ring-1 hover:ring-slate-600'
-                          )}
-                          onClick={() => toggleVideoSelection(video.id)}
+                    <>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 rounded-[2px] border-slate-700 bg-slate-900"
+                          onClick={() => setPitchMode('record')}
                         >
-                          {video.thumbnail_url ? (
-                            <img
-                              src={video.thumbnail_url}
-                              alt={video.title || 'Video'}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-slate-800 flex items-center justify-center">
-                              <Play className="h-6 w-6 text-slate-500" />
-                            </div>
-                          )}
-                          {selectedVideoIds.includes(video.id) && (
-                            <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
-                              <div className="bg-emerald-500 text-white rounded-full p-1">
-                                <Play className="h-4 w-4" />
-                              </div>
-                            </div>
-                          )}
-                        </Card>
-                      ))}
-                    </div>
-                  )}
+                          <Camera className="h-4 w-4 mr-2" />
+                          Record or Upload
+                        </Button>
+                      </div>
 
-                  {videos.length > 0 && (
-                    <p className="text-xs text-slate-500 font-sans">
-                      {selectedVideoIds.length} video(s) selected • Your profile acts as your
-                      application
-                    </p>
+                      {videos.length > 0 && (
+                        <>
+                          <p className="text-xs text-slate-500 font-sans mt-2">Or select from your portfolio:</p>
+                          {isLoading ? (
+                            <div className="text-sm text-slate-400 py-4 text-center font-sans">
+                              Loading...
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-3 gap-2 pr-4">
+                              {videos.map((video) => (
+                                <Card
+                                  key={video.id}
+                                  className={cn(
+                                    'relative aspect-[9/16] overflow-hidden cursor-pointer transition-all rounded-[2px] border-slate-700 bg-slate-900',
+                                    selectedVideoIds.includes(video.id)
+                                      ? 'ring-2 ring-emerald-500'
+                                      : 'hover:ring-1 hover:ring-slate-600'
+                                  )}
+                                  onClick={() => toggleVideoSelection(video.id)}
+                                >
+                                  {video.thumbnail_url ? (
+                                    <img
+                                      src={video.thumbnail_url}
+                                      alt={video.title || 'Video'}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                                      <Play className="h-6 w-6 text-slate-500" />
+                                    </div>
+                                  )}
+                                  {selectedVideoIds.includes(video.id) && (
+                                    <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
+                                      <div className="bg-emerald-500 text-white rounded-full p-1">
+                                        <Play className="h-4 w-4" />
+                                      </div>
+                                    </div>
+                                  )}
+                                </Card>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {videos.length === 0 && !pitchVideoBlob && (
+                        <p className="text-xs text-slate-500 font-sans">
+                          Record a video to introduce yourself for this role.
+                        </p>
+                      )}
+
+                      {hasVideo && (
+                        <p className="text-xs text-emerald-500/80 font-sans">
+                          ✓ Video selected
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
 

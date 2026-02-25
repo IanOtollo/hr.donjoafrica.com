@@ -13,6 +13,7 @@ interface Applicant {
   id: string;
   status: string;
   cover_message: string | null;
+  pitch_video_id: string | null;
   created_at: string;
   applicant: {
     id: string;
@@ -29,6 +30,7 @@ interface Applicant {
     video_url: string;
     views: number;
   }[];
+  pitch_video?: { id: string; video_url: string; thumbnail_url: string | null; title: string | null } | null;
 }
 
 interface Job {
@@ -63,11 +65,11 @@ export default function JobApplicants() {
 
       if (jobData) setJob(jobData);
 
-      // Fetch applications with applicant profiles
+      // Fetch applications with applicant profiles and pitch_video_id
       const { data: applications } = await supabase
         .from('job_applications')
         .select(`
-          id, status, cover_message, created_at,
+          id, status, cover_message, pitch_video_id, created_at,
           applicant:profiles!job_applications_applicant_id_fkey(
             id, username, avatar, skills, skill_category, is_verified
           )
@@ -76,16 +78,28 @@ export default function JobApplicants() {
         .order('created_at', { ascending: false });
 
       if (applications) {
-        // Fetch videos for each applicant
+        // Fetch videos for each applicant (portfolio + pitch video)
         const applicantsWithVideos: Applicant[] = await Promise.all(
           applications.map(async (app: any) => {
-            // Use RPC function to access public videos (respects RLS via SECURITY DEFINER)
             const { data: videos } = await supabase
               .rpc('get_user_public_videos', { target_user_id: app.applicant.id });
+            const portfolioVideos = (videos || []).slice(0, 6);
+
+            // Fetch pitch video if linked (employer can view applicant's pitch)
+            let pitchVideo = null;
+            if (app.pitch_video_id) {
+              const { data: pv } = await supabase
+                .from('videos')
+                .select('id, video_url, thumbnail_url, title')
+                .eq('id', app.pitch_video_id)
+                .maybeSingle();
+              pitchVideo = pv;
+            }
 
             return {
               ...app,
-              videos: (videos || []).slice(0, 6),
+              videos: portfolioVideos,
+              pitch_video: pitchVideo,
             };
           })
         );
@@ -315,6 +329,34 @@ export default function JobApplicants() {
                       {skill}
                     </Badge>
                   ))}
+                </div>
+              )}
+
+              {/* Pitch Video (job-specific) */}
+              {applicant.pitch_video && (
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">Video Pitch (for this role)</p>
+                  <div 
+                    className="aspect-[9/16] max-w-[180px] relative bg-muted rounded-lg overflow-hidden cursor-pointer group"
+                    onClick={() => navigate(`/feed?video=${applicant.pitch_video!.id}`)}
+                  >
+                    {applicant.pitch_video.thumbnail_url ? (
+                      <img 
+                        src={applicant.pitch_video.thumbnail_url}
+                        alt={applicant.pitch_video.title || 'Pitch video'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-slate-800">
+                        <Play className="h-8 w-8 text-slate-500" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 flex items-center justify-center transition-colors">
+                      <div className="rounded-full bg-white/90 p-3">
+                        <Play className="h-6 w-6 text-slate-900" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 

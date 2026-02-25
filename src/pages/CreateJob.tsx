@@ -185,6 +185,7 @@ export default function CreateJob() {
             skills_required: validation.data.skills_required,
             benefits: validation.data.benefits,
             application_deadline: deadline || null,
+            video_prompt: videoPrompt.trim() || null,
           })
           .eq('id', jobId)
           .eq('employer_id', user?.id);
@@ -205,6 +206,7 @@ export default function CreateJob() {
           skills_required: validation.data.skills_required,
           benefits: validation.data.benefits,
           application_deadline: deadline || null,
+          video_prompt: videoPrompt.trim() || null,
         });
         if (error) throw error;
         toast.success('Job posting created!', { icon: null });
@@ -439,7 +441,7 @@ export default function CreateJob() {
           />
         </div>
 
-        {/* Video Prompt — hidden until DB migration is deployed
+        {/* Video Pitch Guidance — HR instructions shown to applicants when applying */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Video Pitch Guidance <span className="text-muted-foreground text-xs">(optional)</span></label>
           <p className="text-xs text-muted-foreground">Tell applicants what to include in their video pitch. This will be shown when they apply.</p>
@@ -452,7 +454,6 @@ export default function CreateJob() {
           />
           <p className="text-xs text-muted-foreground text-right">{videoPrompt.length}/1,000</p>
         </div>
-        */}
       </div>
     </div>
   );

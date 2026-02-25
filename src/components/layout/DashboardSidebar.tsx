@@ -150,13 +150,13 @@ export function DashboardSidebar() {
       {/* Logo Section */}
       <div className={cn("p-6 pb-4", isCollapsed && "p-4 pb-2")}>
         <div className={cn("flex items-center gap-3", isCollapsed && "justify-center")}>
-          <div className="h-12 w-12 neo-extruded rounded-2xl flex items-center justify-center flex-shrink-0">
-            <Rocket className="h-6 w-6 text-primary" />
+          <div className="h-12 w-12 neo-extruded rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden p-1">
+            <img src="/fuse-logo.png" alt="Fuse" className="h-full w-full object-contain" />
           </div>
           {!isCollapsed && (
             <div className="transition-opacity duration-300">
-              <h1 className="text-lg font-bold text-charcoal">Donjo</h1>
-              <p className="text-xs text-cool-grey">Venture Engine</p>
+              <h1 className="text-lg font-bold text-charcoal">Fuse</h1>
+              <p className="text-xs text-cool-grey">Prove your skills, get hired</p>
             </div>
           )}
         </div>

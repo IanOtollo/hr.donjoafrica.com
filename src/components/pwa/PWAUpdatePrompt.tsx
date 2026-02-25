@@ -50,7 +50,7 @@ export function PWAUpdatePrompt() {
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-sm">Update Available</h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              A new version of Donjo is available. Refresh to get the latest features.
+              A new version of Fuse is available. Refresh to get the latest features.
             </p>
             <div className="flex gap-2 mt-3">
               <Button size="sm" variant="coral" onClick={handleUpdate}>

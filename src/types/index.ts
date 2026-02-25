@@ -1,4 +1,4 @@
-// Venture-related types for the Startup Garage platform
+// Venture-related types for Fuse
 export type UserType = 'talent' | 'employer' | 'founder' | 'investor' | 'judge';
 
 export type SkillCategory = 'tech' | 'design' | 'business' | 'other';
@@ -71,7 +71,7 @@ export interface Article {
   createdAt: Date;
 }
 
-// Venture Types for Startup Garage
+// Venture Types for Fuse
 export interface Venture {
   id: string;
   name: string;

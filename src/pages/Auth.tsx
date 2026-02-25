@@ -378,8 +378,8 @@ export default function Auth() {
         <div className="text-center space-y-4">
           <Logo size="xl" className="justify-center" />
           <div className="space-y-1">
-            <h1 className="text-4xl font-bold tracking-tight text-charcoal">Startup Garage</h1>
-            <p className="text-cool-grey text-lg">Venture Acceleration Engine</p>
+            <h1 className="text-4xl font-bold tracking-tight text-charcoal">Fuse</h1>
+            <p className="text-cool-grey text-lg">Prove your skills, get hired</p>
           </div>
         </div>
 
@@ -467,7 +467,7 @@ export default function Auth() {
             onClick={() => setStep('welcome')}
             className="glass-panel px-4 py-2.5 text-sm font-medium text-[#1e293b] hover:opacity-90 pointer-events-auto"
           >
-            UI Series
+            ← Back
           </button>
           <div className="flex-1 flex justify-center">
             <div className="relative">
@@ -724,7 +724,7 @@ export default function Auth() {
       <div className="flex-1 flex flex-col justify-center max-w-sm mx-auto w-full">
         <div className="space-y-2 mb-10">
           <h2 className="text-3xl font-bold">Who are you?</h2>
-          <p className="text-muted-foreground">Select your primary role on Donjo</p>
+          <p className="text-muted-foreground">Select your primary role on Fuse</p>
         </div>
 
         <div className="space-y-4">

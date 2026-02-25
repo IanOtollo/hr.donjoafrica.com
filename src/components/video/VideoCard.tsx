@@ -119,7 +119,7 @@ export function VideoCard({ video, isActive = false }: VideoCardProps) {
   const handleShare = async () => {
     const shareUrl = `${window.location.origin}/feed?video=${video.id}`;
     const shareData = {
-      title: video.caption || 'Check out this video on Donjo',
+      title: video.caption || 'Check out this video on Fuse',
       text: `${video.user.username}'s video portfolio`,
       url: shareUrl,
     };
