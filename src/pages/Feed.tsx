@@ -22,7 +22,7 @@ export default function Feed() {
     }
   }, [isAuthenticated, isLoading, navigate]);
 
-  const isFounder = profile?.user_type === 'founder' || profile?.user_type === 'talent';
+  const isFounder = profile?.user_type === 'founder';
   const shouldRedirectToDashboard = (isAdmin || isFounder) && !!profile;
   if (isLoading || shouldRedirectToDashboard) {
     return (

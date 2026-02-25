@@ -42,12 +42,21 @@ const baseMenuItems = [
 ];
 
 const founderItems: NavGroup = {
-  title: 'Applicant Hub',
+  title: 'Venture Hub',
   items: [
     { icon: LayoutDashboard, label: 'My Dashboard', path: '/founder' },
     { icon: Plus, label: 'Apply to Program', path: '/apply' },
-    { icon: Briefcase, label: 'Jobs', path: '/jobs' },
     { icon: Rocket, label: 'My Ventures', path: '/ventures' },
+    { icon: Briefcase, label: 'Jobs', path: '/jobs' },
+  ],
+};
+
+const applicantItems: NavGroup = {
+  title: 'Job Seeker',
+  items: [
+    { icon: LayoutDashboard, label: 'Feed', path: '/feed' },
+    { icon: Briefcase, label: 'Jobs', path: '/jobs' },
+    { icon: Bookmark, label: 'My Applications', path: '/applicant' },
   ],
 };
 
@@ -62,14 +71,14 @@ const adminItems: NavGroup = {
   ],
 };
 
-const managementItems: NavGroup = {
+const getManagementItems = (isEmployer: boolean): NavGroup => ({
   title: 'Account',
   items: [
     { icon: Bell, label: 'Notifications', path: '/notifications' },
     { icon: User, label: 'Profile', path: '/profile' },
-    { icon: Settings, label: 'Settings', path: '/employer/settings' },
+    { icon: Settings, label: isEmployer ? 'Settings' : 'Edit Profile', path: isEmployer ? '/employer/settings' : '/profile/edit' },
   ],
-};
+});
 
 export function DashboardSidebar() {
   const location = useLocation();
@@ -98,9 +107,10 @@ export function DashboardSidebar() {
   };
 
   const isAdmin = profile?.user_type === 'employer' || profile?.user_type === 'investor';
-  const isFounder = profile?.user_type === 'founder' || profile?.user_type === 'talent';
+  const isFounder = profile?.user_type === 'founder';
+  const isApplicant = profile?.user_type === 'talent';
 
-  const dashboardPath = isAdmin ? '/admin' : isFounder ? '/founder' : '/feed';
+  const dashboardPath = isAdmin ? '/admin' : isFounder ? '/founder' : isApplicant ? '/feed' : '/feed';
   const mainMenuItems: NavGroup = {
     title: 'Main Menu',
     items: [{ icon: LayoutDashboard, label: 'Dashboard', path: dashboardPath }, ...baseMenuItems],
@@ -109,8 +119,9 @@ export function DashboardSidebar() {
   const navGroups = [
     mainMenuItems,
     ...(isFounder ? [founderItems] : []),
+    ...(isApplicant ? [applicantItems] : []),
     ...(isAdmin ? [adminItems] : []),
-    managementItems,
+    getManagementItems(isAdmin),
   ];
 
   const NavLink = ({ item }: { item: NavItem }) => {

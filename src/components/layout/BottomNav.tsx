@@ -35,7 +35,8 @@ export function BottomNav() {
   const { unreadCount } = useNotifications();
 
   const isEmployer = profile?.user_type === 'employer' || profile?.user_type === 'investor';
-  const isFounder = profile?.user_type === 'founder' || profile?.user_type === 'talent';
+  const isFounder = profile?.user_type === 'founder';
+  const isApplicant = profile?.user_type === 'talent';
   const navItems = isEmployer ? employerNavItems : isFounder ? founderNavItems : applicantNavItems;
 
   const isActiveRoute = (path: string) => {

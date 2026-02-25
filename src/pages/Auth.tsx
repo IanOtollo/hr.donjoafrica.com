@@ -83,7 +83,8 @@ export default function Auth() {
       const shouldRedirect = justLoggedIn || location.search.includes('code=') || location.hash.includes('access_token');
       if (shouldRedirect && profile) {
         const destination = (profile.user_type === 'employer' || profile.user_type === 'investor') ? '/admin' : 
-                          profile.user_type === 'founder' ? '/founder' : '/feed';
+                          profile.user_type === 'founder' ? '/founder' : 
+                          profile.user_type === 'talent' ? '/feed' : '/feed';
         navigate(destination, { replace: true });
         setJustLoggedIn(false);
         return;

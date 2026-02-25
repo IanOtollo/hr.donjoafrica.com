@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
 const ADMIN_ROLES = ['employer', 'investor'];
-const FOUNDER_ROLES = ['founder', 'talent'];
+const FOUNDER_ROLES = ['founder'];
+const APPLICANT_ROLES = ['talent'];
 
 export function isAdminRole(userType?: string): boolean {
   return !!userType && ADMIN_ROLES.includes(userType);
@@ -11,6 +12,10 @@ export function isAdminRole(userType?: string): boolean {
 
 export function isFounderRole(userType?: string): boolean {
   return !!userType && FOUNDER_ROLES.includes(userType);
+}
+
+export function isApplicantRole(userType?: string): boolean {
+  return !!userType && APPLICANT_ROLES.includes(userType);
 }
 
 /**
@@ -31,6 +36,7 @@ export function useRoleBasedRedirect() {
       } else if (isFounderRole(profile.user_type)) {
         navigate('/founder', { replace: true });
       }
+      // talent (applicants) stay on /feed
     }
   }, [profile, isLoading, isAuthenticated, navigate, location.pathname]);
 }
@@ -42,5 +48,6 @@ export function useDashboardPath(): string {
   const { profile } = useAuth();
   if (isAdminRole(profile?.user_type)) return '/admin';
   if (isFounderRole(profile?.user_type)) return '/founder';
+  if (isApplicantRole(profile?.user_type)) return '/feed';
   return '/feed';
 }

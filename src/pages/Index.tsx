@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { isAdminRole, isFounderRole } from '@/components/auth/ProtectedRoute';
+import { isAdminRole, isFounderRole, isApplicantRole } from '@/components/auth/ProtectedRoute';
 import { RocketLoader } from '@/components/ui/RocketLoader';
 import Auth from './Auth';
 
@@ -15,6 +15,8 @@ const Index = () => {
         navigate('/admin', { replace: true });
       } else if (isFounderRole(profile.user_type)) {
         navigate('/founder', { replace: true });
+      } else if (isApplicantRole(profile.user_type)) {
+        navigate('/feed', { replace: true });
       } else {
         navigate('/feed', { replace: true });
       }
