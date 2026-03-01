@@ -43,9 +43,11 @@ serve(async (req: Request) => {
       );
     }
 
+    const userEmail = (await supabase.auth.admin.getUserById(cred.user_id)).data.user?.email ?? "";
+    
     const { data: sessionData, error } = await supabase.auth.admin.generateLink({
       type: "magiclink",
-      email: (await supabase.auth.admin.getUserById(cred.user_id)).data.user?.email ?? "",
+      email: userEmail,
     });
 
     if (error) {
@@ -55,10 +57,13 @@ serve(async (req: Request) => {
       );
     }
 
+    // The generateLink returns properties with hashed_token and action_link
+    // We need to use the action_link to exchange for a session
+    const actionLink = sessionData?.properties?.action_link;
+
     return new Response(
       JSON.stringify({
-        access_token: sessionData.properties?.access_token,
-        refresh_token: sessionData.properties?.refresh_token,
+        action_link: actionLink,
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
