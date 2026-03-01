@@ -10,7 +10,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AdminRoute } from "@/components/auth/AdminRoute";
 import { FounderRoute } from "@/components/auth/FounderRoute";
-import { ApplicantRoute } from "@/components/auth/ApplicantRoute";
 import { EmployerRoute } from "@/components/auth/EmployerRoute";
 import { AuthProvider } from "@/context/AuthContext";
 import { PWAUpdatePrompt } from "@/components/pwa/PWAUpdatePrompt";
@@ -22,7 +21,7 @@ import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
-import Messages from "./pages/Messages";
+
 import UserProfile from "./pages/UserProfile";
 import Ventures from "./pages/Ventures";
 import VentureDetail from "./pages/VentureDetail";
@@ -41,7 +40,6 @@ const JobApplicants = lazy(() => import("./pages/JobApplicants"));
 const ChallengeSubmissions = lazy(() => import("./pages/ChallengeSubmissions"));
 const FounderWizard = lazy(() => import("./pages/FounderWizard"));
 const FounderDashboard = lazy(() => import("./pages/FounderDashboard"));
-const ApplicantDashboard = lazy(() => import("./pages/ApplicantDashboard"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 
 const queryClient = new QueryClient();
@@ -69,11 +67,10 @@ const App = () => (
             <Route path="/feed" element={<Feed />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/ventures" element={<Ventures />} />
-            <Route path="/ventures/:id" element={<VentureDetail />} />
+            <Route path="/ventures" element={<AdminRoute><Ventures /></AdminRoute>} />
+            <Route path="/ventures/:id" element={<AdminRoute><VentureDetail /></AdminRoute>} />
             <Route path="/apply" element={<FounderRoute><FounderWizard /></FounderRoute>} />
             <Route path="/founder" element={<FounderRoute><FounderDashboard /></FounderRoute>} />
-            <Route path="/applicant" element={<ApplicantRoute><ApplicantDashboard /></ApplicantRoute>} />
             <Route path="/founder/dashboard" element={<Navigate to="/founder" replace />} />
             <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
             <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
@@ -83,7 +80,7 @@ const App = () => (
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/edit" element={<EditProfile />} />
-            <Route path="/messages" element={<Messages />} />
+            <Route path="/messages" element={<Navigate to="/feed" replace />} />
             <Route path="/user/:userId" element={<UserProfile />} />
             {/* Employer Routes (protected by EmployerRoute) */}
             <Route path="/employer" element={<EmployerRoute />}>
