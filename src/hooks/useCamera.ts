@@ -101,7 +101,7 @@ export function useCamera({ maxDuration = 120 }: UseCameraOptions = {}) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioCleanupRef = useRef<(() => void) | null>(null);
 
   const [isStreaming, setIsStreaming] = useState(false);
