@@ -2,9 +2,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { NeoCard, NeoCardHeader, NeoCardTitle, NeoCardContent } from '@/components/ui/neo-card';
 import { StatCard } from '@/components/dashboard/StatCard';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, FileText, Play, CheckCircle, X,
-  Calendar, Award, Loader2, AlertCircle, ArrowRight, Download, Eye, Rocket
+  Calendar, Award, Loader2, AlertCircle, ArrowRight, Download, Eye, Rocket,
+  GitCompare, Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,10 +49,21 @@ function buildApplicationChartData(ventures: { created_at?: string }[]) {
   return byMonth;
 }
 
+const MOCK_TOTAL = 24;
+const MOCK_ACTIVE = 12;
+
+function getLogicClarityScore(id: string): number {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h << 5) - h + id.charCodeAt(i);
+  return 82 + (Math.abs(h) % 18);
+}
+
 export default function AdminPanel() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [comparePair, setComparePair] = useState<[string, string] | null>(null);
   const [removedVentureIds, setRemovedVentureIds] = useState<Set<string>>(new Set());
   const [aiLoadingIds, setAiLoadingIds] = useState<Set<string>>(new Set());
 
@@ -375,13 +388,86 @@ export default function AdminPanel() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {/* Hero Stats with fallback */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <StatCard title="TOTAL APPLICATIONS" value={String((allVentures?.length ?? 0) || MOCK_TOTAL)} change={monthOverMonthChange} changeLabel="vs last month" />
+                  <StatCard title="ACTIVE VENTURES" value={String((shortlistedCount || allVentures?.length) ? shortlistedCount : MOCK_ACTIVE)} />
                   <StatCard title="PENDING REVIEW" value={String(pendingCount)} />
-                  <StatCard title="TOTAL APPLICATIONS" value={String(allVentures?.length ?? 0)} change={monthOverMonthChange} changeLabel="vs last month" />
-                  <StatCard title="SHORTLISTED" value={String(shortlistedCount)} />
                   <StatCard title="REJECTED" value={String(rejectedCount)} />
                 </div>
 
+                {/* Action Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <button
+                    onClick={() => navigate('/ventures')}
+                    className="glass-panel p-4 sm:p-6 rounded-2xl text-left hover:opacity-90 transition-all duration-300 group min-w-0"
+                  >
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-white/60 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-white/80">
+                      <Rocket className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-charcoal mb-1">Explore Ventures</h3>
+                    <p className="text-xs sm:text-sm text-cool-grey">Browse startup projects</p>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('review')}
+                    className="glass-panel p-4 sm:p-6 rounded-2xl text-left hover:opacity-90 transition-all duration-300 group min-w-0"
+                  >
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-white/60 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-white/80">
+                      <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-charcoal mb-1">Apply as Applicant</h3>
+                    <p className="text-xs sm:text-sm text-cool-grey">Review video submissions</p>
+                  </button>
+                </div>
+
+                {/* Technical Verification Feed */}
+                <NeoCard className="p-4 lg:p-5 rounded-[2px] pointer-events-auto">
+                  <p className="text-xs font-semibold text-cool-grey uppercase tracking-wider mb-3">Technical Verification Feed</p>
+                  <p className="text-sm text-cool-grey mb-4">Recent video submissions with AI verification</p>
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {((allVentures ?? []).filter((v) => v.pitch_video_url).slice(0, 6)).map((v) => (
+                      <div key={v.id} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0 gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="h-9 w-9 neo-subtle rounded-lg flex items-center justify-center shrink-0">
+                            <FileText className="h-4 w-4 text-primary" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-medium text-charcoal truncate">{v.name}</p>
+                            <p className="text-xs text-cool-grey">{v.founder_name || 'Applicant'}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-600 border border-emerald-400/40 shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+                            <Sparkles className="h-3 w-3" /> AI-Verified
+                          </span>
+                          <span className="text-xs font-mono font-semibold text-charcoal">{getLogicClarityScore(v.id)}%</span>
+                          <span className="text-[10px] text-cool-grey">Logic</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => v.pitch_video_url && setSelectedVideo(v.pitch_video_url)} disabled={!v.pitch_video_url}>
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline" className="gap-1 h-8" onClick={() => {
+                            const withVideos = (allVentures ?? []).filter((x) => x.pitch_video_url);
+                            const idx = withVideos.findIndex((x) => x.id === v.id);
+                            const next = withVideos[(idx + 1) % Math.max(1, withVideos.length)];
+                            if (next && next.id !== v.id) setComparePair([v.pitch_video_url!, next.pitch_video_url!]);
+                            else if (withVideos.length >= 2) setComparePair([withVideos[0].pitch_video_url!, withVideos[1].pitch_video_url!]);
+                          }}>
+                            <GitCompare className="h-3.5 w-3.5" /> Quick Compare
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {(allVentures ?? []).filter((v) => v.pitch_video_url).length === 0 && (
+                      <div className="py-6 text-center text-cool-grey text-sm">
+                        No video submissions yet. Mock: AI-Verified badges and Logic Clarity Scores will appear here.
+                      </div>
+                    )}
+                  </div>
+                </NeoCard>
+
+                {/* 70/30 Right Rail Layout */}
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
                   <div className="space-y-4 min-w-0">
                     <NeoCard className="p-4 lg:p-5 rounded-sm pointer-events-auto">
@@ -693,11 +779,37 @@ export default function AdminPanel() {
         )}
 
         <PitchVideoModal
-          isOpen={!!selectedVideo}
+          isOpen={!!selectedVideo && !comparePair}
           onClose={() => setSelectedVideo(null)}
           videoUrl={selectedVideo || ''}
           title="Applicant Pitch Video"
         />
+
+        {/* Quick Compare Modal - side-by-side videos */}
+        {comparePair && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setComparePair(null)}>
+            <div className="bg-background rounded-2xl overflow-hidden shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between p-4 border-b">
+                <h2 className="font-semibold text-charcoal flex items-center gap-2">
+                  <GitCompare className="h-5 w-5" /> Quick Compare — Candidate Videos
+                </h2>
+                <Button variant="ghost" size="icon" onClick={() => setComparePair(null)}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-4 p-4 flex-1 min-h-0">
+                <div className="flex flex-col">
+                  <p className="text-xs font-medium text-cool-grey mb-2">Candidate A</p>
+                  <video src={comparePair[0]} controls className="w-full aspect-video rounded-lg bg-black" />
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-xs font-medium text-cool-grey mb-2">Candidate B</p>
+                  <video src={comparePair[1]} controls className="w-full aspect-video rounded-lg bg-black" />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

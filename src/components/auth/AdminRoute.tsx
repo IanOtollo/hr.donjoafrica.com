@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { isHardcodedAdmin } from '@/context/AuthContext';
 import { RocketLoader } from '@/components/ui/RocketLoader';
 
 const ADMIN_ROLES = ['employer', 'investor'] as const;
@@ -15,7 +16,8 @@ interface AdminRouteProps {
 
 export function AdminRoute({ children }: AdminRouteProps) {
   const navigate = useNavigate();
-  const { profile, isLoading, isAuthenticated } = useAuth();
+  const { profile, user, isLoading, isAuthenticated } = useAuth();
+  const isAdmin = isHardcodedAdmin(user?.email) || isAdminRole(profile?.user_type);
 
   useEffect(() => {
     if (isLoading) return;
@@ -23,10 +25,9 @@ export function AdminRoute({ children }: AdminRouteProps) {
       navigate('/auth');
       return;
     }
-    if (!isAdminRole(profile?.user_type)) {
-      navigate('/feed');
-    }
-  }, [profile, isLoading, isAuthenticated, navigate]);
+    const admin = isHardcodedAdmin(user?.email) || isAdminRole(profile?.user_type);
+    if (!admin) navigate('/feed');
+  }, [profile?.user_type, user?.email, isLoading, isAuthenticated, navigate]);
 
   if (isLoading) {
     return (
@@ -36,7 +37,7 @@ export function AdminRoute({ children }: AdminRouteProps) {
     );
   }
 
-  if (!isAuthenticated || !isAdminRole(profile?.user_type)) {
+  if (!isAuthenticated || !isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <RocketLoader indeterminate label="Redirecting..." />

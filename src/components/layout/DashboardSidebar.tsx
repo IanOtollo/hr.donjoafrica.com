@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
 import {
   Briefcase,
   Trophy,
@@ -52,11 +52,11 @@ const founderItems: NavGroup = {
 };
 
 const applicantItems: NavGroup = {
-  title: 'Job Seeker',
+  title: 'Applicant Hub',
   items: [
-    { icon: LayoutDashboard, label: 'Feed', path: '/feed' },
-    { icon: Briefcase, label: 'Jobs', path: '/jobs' },
-    { icon: Bookmark, label: 'My Applications', path: '/applicant' },
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/feed' },
+    { icon: User, label: 'My Portfolio', path: '/profile' },
+    { icon: Bookmark, label: 'Job Status', path: '/applicant' },
   ],
 };
 
@@ -83,7 +83,7 @@ const getManagementItems = (isEmployer: boolean): NavGroup => ({
 export function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, logout } = useAuth();
+  const { profile, user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['Main Menu', 'Management']);
@@ -106,7 +106,7 @@ export function DashboardSidebar() {
     setIsOpen(false);
   };
 
-  const isAdmin = profile?.user_type === 'employer' || profile?.user_type === 'investor';
+  const isAdmin = isHardcodedAdmin(user?.email) || profile?.user_type === 'employer' || profile?.user_type === 'investor';
   const isFounder = profile?.user_type === 'founder';
   const isApplicant = profile?.user_type === 'talent';
 
@@ -161,13 +161,13 @@ export function DashboardSidebar() {
       {/* Logo Section */}
       <div className={cn("p-6 pb-4", isCollapsed && "p-4 pb-2")}>
         <div className={cn("flex items-center gap-3", isCollapsed && "justify-center")}>
-          <div className="h-12 w-12 neo-extruded rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden p-1">
-            <img src="/fuse-logo.png" alt="Fuse" className="h-full w-full object-contain" />
+          <div className="h-12 w-12 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden p-1 bg-white/70 backdrop-blur-md shadow-lg border border-white/50">
+            <Rocket className="h-7 w-7 text-primary" />
           </div>
           {!isCollapsed && (
             <div className="transition-opacity duration-300">
-              <h1 className="text-lg font-bold text-charcoal">Fuse</h1>
-              <p className="text-xs text-cool-grey">Prove your skills, get hired</p>
+              <h1 className="text-lg font-bold text-charcoal">Donjo</h1>
+              <p className="text-xs text-cool-grey">Venture Engine</p>
             </div>
           )}
         </div>
@@ -280,14 +280,14 @@ export function DashboardSidebar() {
         />
       )}
 
-      {/* Sidebar - Mobile Drawer */}
+      {/* Sidebar - Mobile Drawer (glassmorphism) */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-full w-72 neo-extruded z-50 transition-transform duration-300 ease-in-out lg:hidden rounded-r-3xl",
+          "fixed left-0 top-0 h-full w-72 z-50 transition-transform duration-300 ease-in-out lg:hidden rounded-r-3xl bg-white/80 backdrop-blur-xl border-r border-white/50 shadow-xl",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
         style={{
-          boxShadow: isOpen ? '8px 0 24px rgba(0,0,0,0.1)' : 'none'
+          boxShadow: isOpen ? '8px 0 32px rgba(0,0,0,0.08)' : 'none'
         }}
       >
         <button
@@ -299,10 +299,10 @@ export function DashboardSidebar() {
         <SidebarContent />
       </aside>
 
-      {/* Sidebar - Desktop Fixed */}
+      {/* Sidebar - Desktop Fixed (glassmorphism) */}
       <aside 
         className={cn(
-          "hidden lg:block fixed left-0 top-0 h-full neo-extruded rounded-none rounded-r-3xl z-40 transition-all duration-300 ease-in-out",
+          "hidden lg:block fixed left-0 top-0 h-full rounded-none rounded-r-3xl z-40 transition-all duration-300 ease-in-out bg-white/80 backdrop-blur-xl border-r border-white/50 shadow-lg",
           isCollapsed ? "w-20" : "w-72"
         )}
       >

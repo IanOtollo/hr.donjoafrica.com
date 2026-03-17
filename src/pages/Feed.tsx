@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
 import { useRoleBasedRedirect } from '@/components/auth/ProtectedRoute';
 import { useFeedStats } from '@/hooks/useFeedStats';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -13,7 +13,7 @@ export default function Feed() {
   const navigate = useNavigate();
   const { profile, isLoading, isAuthenticated, user } = useAuth();
   useRoleBasedRedirect();
-  const isAdmin = profile?.user_type === 'employer' || profile?.user_type === 'investor';
+  const isAdmin = isHardcodedAdmin(user?.email) || profile?.user_type === 'employer' || profile?.user_type === 'investor';
   const { data: stats, isLoading: statsLoading } = useFeedStats(user?.id, isAdmin);
 
   useEffect(() => {
@@ -75,14 +75,14 @@ export default function Feed() {
           </button>
 
           <button
-            onClick={() => navigate('/apply')}
+            onClick={() => navigate('/apply-applicant')}
             className="glass-panel p-4 sm:p-6 rounded-2xl sm:rounded-3xl text-left hover:opacity-90 transition-all duration-300 group min-w-0 text-[#1e293b]"
           >
             <div className="h-10 w-10 sm:h-12 sm:w-12 bg-white/60 rounded-2xl flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-white/80 transition-all duration-300">
               <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </div>
             <h3 className="font-semibold text-charcoal mb-1 text-sm sm:text-base">Apply as Applicant</h3>
-            <p className="text-xs sm:text-sm text-cool-grey">Submit your video portfolio to find your next hire</p>
+            <p className="text-xs sm:text-sm text-cool-grey">Record or upload your video portfolio</p>
           </button>
 
           <button

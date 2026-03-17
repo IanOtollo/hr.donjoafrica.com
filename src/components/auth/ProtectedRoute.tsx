@@ -22,12 +22,19 @@ export function isApplicantRole(userType?: string): boolean {
  * Redirects authenticated users to their role-appropriate dashboard when visiting /feed or /dashboard.
  */
 export function useRoleBasedRedirect() {
-  const { profile, isLoading, isAuthenticated } = useAuth();
+  const { profile, user, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isHardcodedAdminUser = user?.email === 'mbuthia711@gmail.com'; // HARDCODED_ADMIN_EMAIL
 
   useEffect(() => {
-    if (isLoading || !isAuthenticated || !profile?.user_type) return;
+    if (isLoading || !isAuthenticated) return;
+    if (isHardcodedAdminUser) {
+      const path = location.pathname;
+      if (path === '/feed' || path === '/dashboard') navigate('/admin', { replace: true });
+      return;
+    }
+    if (!profile?.user_type) return;
 
     const path = location.pathname;
     if (path === '/feed' || path === '/dashboard') {
@@ -36,9 +43,8 @@ export function useRoleBasedRedirect() {
       } else if (isFounderRole(profile.user_type)) {
         navigate('/founder', { replace: true });
       }
-      // talent (applicants) stay on /feed
     }
-  }, [profile, isLoading, isAuthenticated, navigate, location.pathname]);
+  }, [profile?.user_type, user?.email, isLoading, isAuthenticated, navigate, location.pathname, isHardcodedAdminUser]);
 }
 
 /**
