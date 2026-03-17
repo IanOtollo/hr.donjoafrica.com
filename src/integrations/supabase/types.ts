@@ -275,6 +275,80 @@ export type Database = {
         }
         Relationships: []
       }
+      hr_reviews: {
+        Row: {
+          ai_logic_score: number | null
+          ai_summary: string | null
+          comment: string | null
+          created_at: string
+          google_calendar_link: string | null
+          id: string
+          interview_scheduled_at: string | null
+          is_shortlisted: boolean | null
+          manual_rating: number | null
+          reviewer_id: string
+          updated_at: string
+          venture_id: string
+        }
+        Insert: {
+          ai_logic_score?: number | null
+          ai_summary?: string | null
+          comment?: string | null
+          created_at?: string
+          google_calendar_link?: string | null
+          id?: string
+          interview_scheduled_at?: string | null
+          is_shortlisted?: boolean | null
+          manual_rating?: number | null
+          reviewer_id: string
+          updated_at?: string
+          venture_id: string
+        }
+        Update: {
+          ai_logic_score?: number | null
+          ai_summary?: string | null
+          comment?: string | null
+          created_at?: string
+          google_calendar_link?: string | null
+          id?: string
+          interview_scheduled_at?: string | null
+          is_shortlisted?: boolean | null
+          manual_rating?: number | null
+          reviewer_id?: string
+          updated_at?: string
+          venture_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "top_talent"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "hr_reviews_venture_id_fkey"
+            columns: ["venture_id"]
+            isOneToOne: false
+            referencedRelation: "ventures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intro_requests: {
         Row: {
           connected_at: string | null
