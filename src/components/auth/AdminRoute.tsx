@@ -15,8 +15,8 @@ interface AdminRouteProps {
 
 export function AdminRoute({ children }: AdminRouteProps) {
   const navigate = useNavigate();
-  const { profile, isLoading, isAuthenticated } = useAuth();
-  const isAdmin = isAdminRole(profile?.user_type);
+  const { profile, isLoading, isAuthenticated, user } = useAuth();
+  const isAdmin = isHardcodedAdmin(user?.email) || isAdminRole(profile?.user_type);
 
   useEffect(() => {
     if (isLoading) return;
@@ -24,8 +24,8 @@ export function AdminRoute({ children }: AdminRouteProps) {
       navigate('/auth');
       return;
     }
-    if (!isHardcodedAdmin(user?.email) && !isAdminRole(profile?.user_type)) navigate('/feed');
-  }, [profile?.user_type, user?.email, isLoading, isAuthenticated, navigate]);
+    if (!isAdmin) navigate('/feed');
+  }, [isAdmin, isLoading, isAuthenticated, navigate]);
 
   if (isLoading) {
     return (
