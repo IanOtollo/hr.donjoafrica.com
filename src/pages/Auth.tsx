@@ -5,7 +5,7 @@ import { RocketLoader } from '@/components/ui/RocketLoader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Logo } from '@/components/ui/Logo';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -82,23 +82,23 @@ export default function Auth() {
       // Redirect when: just logged in, OAuth callback, or profile loaded (with role)
       const shouldRedirect = justLoggedIn || location.search.includes('code=') || location.hash.includes('access_token');
       if (shouldRedirect && profile) {
-        const destination = (profile.user_type === 'employer' || profile.user_type === 'investor') ? '/admin' : 
+        const destination = isHardcodedAdmin(user?.email) || (profile.user_type === 'employer' || profile.user_type === 'investor') ? '/admin' : 
                           profile.user_type === 'founder' ? '/founder' : 
                           profile.user_type === 'talent' ? '/feed' : '/feed';
         navigate(destination, { replace: true });
         setJustLoggedIn(false);
         return;
       }
-      // Fallback: if authenticated but profile slow/null, redirect to feed after brief wait
+      // Fallback: if authenticated but profile slow/null, check hardcoded admin first
       if (shouldRedirect && !profile) {
         const t = setTimeout(() => {
-          navigate('/feed', { replace: true });
+          navigate(isHardcodedAdmin(user?.email) ? '/admin' : '/feed', { replace: true });
           setJustLoggedIn(false);
         }, 500);
         return () => clearTimeout(t);
       }
     }
-  }, [isAuthenticated, isLoading, profile, navigate, location.search, location.hash, profileNeedsCompletion, justLoggedIn]);
+  }, [isAuthenticated, isLoading, profile, user?.email, navigate, location.search, location.hash, profileNeedsCompletion, justLoggedIn]);
 
   const handleAuth = async () => {
     // Validate email
@@ -315,7 +315,7 @@ export default function Auth() {
     // If profile needs completion (new Google OAuth user), show onboarding flow
     // Let the step rendering handle it - don't show "already signed in" screen
     if (!profileNeedsCompletion && step === 'welcome') {
-      const destination = (profile.user_type === 'employer' || profile.user_type === 'investor') ? '/admin' : 
+      const destination = isHardcodedAdmin(user?.email) || (profile.user_type === 'employer' || profile.user_type === 'investor') ? '/admin' : 
                           profile.user_type === 'founder' ? '/founder' : '/feed';
 
       return (
