@@ -43,6 +43,10 @@ interface NavGroup {
 const baseMenuItems = [
   { icon: Rocket, label: 'Ventures', path: '/ventures' },
   { icon: MessageSquare, label: 'Messages', path: '/messages' },
+  { icon: BookOpen, label: 'Resources', path: '/resources' },
+  { icon: Lightbulb, label: 'Career Tips', path: '/career-tips' },
+  { icon: Briefcase, label: 'Jobs', path: '/jobs' },
+  { icon: Trophy, label: 'Challenges', path: '/challenges' },
 ];
 
 const founderItems: NavGroup = {
@@ -97,7 +101,7 @@ export function DashboardSidebar() {
   const { profile, user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(['Main Menu', 'Management']);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(['Main Menu', 'Program Admin', 'Applicant Hub', 'Account']);
 
   const toggleGroup = (title: string) => {
     setExpandedGroups(prev =>
@@ -119,9 +123,9 @@ export function DashboardSidebar() {
 
   const isAdmin = isHardcodedAdmin(user?.email) || profile?.user_type === 'employer' || profile?.user_type === 'investor';
   const isFounder = profile?.user_type === 'founder';
-  const isApplicant = profile?.user_type === 'talent';
+  const isApplicant = profile?.user_type === 'talent' || (!isAdmin && !isFounder);
 
-  const dashboardPath = isAdmin ? '/admin' : isFounder ? '/founder' : isApplicant ? '/feed' : '/feed';
+  const dashboardPath = isAdmin ? '/admin' : isFounder ? '/founder' : '/feed';
   const mainMenuItems: NavGroup = {
     title: 'Main Menu',
     items: [{ icon: LayoutDashboard, label: 'Dashboard', path: dashboardPath }, ...baseMenuItems],
