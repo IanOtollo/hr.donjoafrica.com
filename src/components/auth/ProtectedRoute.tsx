@@ -37,9 +37,9 @@ export function useRoleBasedRedirect() {
 
     const path = location.pathname;
     if (path === '/feed' || path === '/dashboard') {
-      if (isAdminRole(profile.user_type)) {
+      if (isAdminRole(profile?.user_type)) {
         navigate('/admin', { replace: true });
-      } else if (isFounderRole(profile.user_type)) {
+      } else if (isFounderRole(profile?.user_type)) {
         navigate('/founder', { replace: true });
       }
     }

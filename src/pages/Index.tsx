@@ -15,9 +15,9 @@ const Index = () => {
         navigate('/admin', { replace: true });
       } else if (profile?.user_type && isAdminRole(profile.user_type)) {
         navigate('/admin', { replace: true });
-      } else if (isFounderRole(profile.user_type)) {
+      } else if (isFounderRole(profile?.user_type)) {
         navigate('/founder', { replace: true });
-      } else if (isApplicantRole(profile.user_type)) {
+      } else if (isApplicantRole(profile?.user_type)) {
         navigate('/feed', { replace: true });
       } else {
         navigate('/feed', { replace: true });
