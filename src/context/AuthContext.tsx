@@ -17,7 +17,7 @@ interface Profile {
 }
 
 /** Hardcoded admin - use for demo when DB role not set. Change email as needed. */
-export const HARDCODED_ADMIN_EMAIL = 'mbuthia711@gmail.com';
+export const HARDCODED_ADMIN_EMAIL = 'mbutha711@gmail.com';
 export function isHardcodedAdmin(email?: string | null) {
   return email === HARDCODED_ADMIN_EMAIL;
 }
