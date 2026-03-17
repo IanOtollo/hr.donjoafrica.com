@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
 import {
   Briefcase,
   Trophy,
@@ -20,7 +20,11 @@ import {
   Building,
   TrendingUp,
   Menu,
-  X
+  X,
+  BookOpen,
+  Lightbulb,
+  Activity,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -57,6 +61,10 @@ const applicantItems: NavGroup = {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/feed' },
     { icon: User, label: 'My Portfolio', path: '/profile' },
     { icon: Bookmark, label: 'Job Status', path: '/applicant' },
+    { icon: Briefcase, label: 'Find Jobs', path: '/jobs' },
+    { icon: Trophy, label: 'Challenges', path: '/challenges' },
+    { icon: Lightbulb, label: 'Career Tips', path: '/career-tips' },
+    { icon: BookOpen, label: 'Resources', path: '/resources' },
   ],
 };
 
@@ -68,6 +76,9 @@ const adminItems: NavGroup = {
     { icon: Plus, label: 'Post a Job', path: '/employer/jobs/create' },
     { icon: Trophy, label: 'Challenges', path: '/challenges' },
     { icon: Bookmark, label: 'Shortlist', path: '/employer/shortlist' },
+    { icon: Activity, label: 'Activity Log', path: '/activity' },
+    { icon: BarChart3, label: 'Insights', path: '/insights' },
+    { icon: BookOpen, label: 'Resources', path: '/resources' },
   ],
 };
 
@@ -83,7 +94,7 @@ const getManagementItems = (isEmployer: boolean): NavGroup => ({
 export function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, logout } = useAuth();
+  const { profile, user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['Main Menu', 'Management']);
@@ -106,7 +117,7 @@ export function DashboardSidebar() {
     setIsOpen(false);
   };
 
-  const isAdmin = profile?.user_type === 'employer' || profile?.user_type === 'investor';
+  const isAdmin = isHardcodedAdmin(user?.email) || profile?.user_type === 'employer' || profile?.user_type === 'investor';
   const isFounder = profile?.user_type === 'founder';
   const isApplicant = profile?.user_type === 'talent';
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { ConversationList } from "@/components/messaging/ConversationList";
@@ -29,8 +30,13 @@ interface Conversation {
 }
 
 export default function Messages() {
-  const { user, profile } = useAuth();
+  const { user, profile, isAuthenticated, isLoading } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) navigate('/auth');
+  }, [isAuthenticated, isLoading, navigate]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [loading, setLoading] = useState(true);
 

@@ -25,7 +25,12 @@ import ResetPassword from "./pages/ResetPassword";
 
 import UserProfile from "./pages/UserProfile";
 import Ventures from "./pages/Ventures";
+import Messages from "./pages/Messages";
 import VentureDetail from "./pages/VentureDetail";
+import Resources from "./pages/Resources";
+import CareerTips from "./pages/CareerTips";
+import ActivityLog from "./pages/ActivityLog";
+import Insights from "./pages/Insights";
 import NotFound from "./pages/NotFound";
 
 const Create = lazy(() => import("./pages/Create"));
@@ -70,8 +75,8 @@ const App = () => (
             <Route path="/feed" element={<Feed />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/ventures" element={<AdminRoute><Ventures /></AdminRoute>} />
-            <Route path="/ventures/:id" element={<AdminRoute><VentureDetail /></AdminRoute>} />
+            <Route path="/ventures" element={<Ventures />} />
+            <Route path="/ventures/:id" element={<VentureDetail />} />
             <Route path="/apply" element={<FounderRoute><FounderWizard /></FounderRoute>} />
             <Route path="/founder" element={<FounderRoute><FounderDashboard /></FounderRoute>} />
             <Route path="/applicant" element={<ApplicantRoute><ApplicantDashboard /></ApplicantRoute>} />
@@ -85,7 +90,11 @@ const App = () => (
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/edit" element={<EditProfile />} />
-            <Route path="/messages" element={<Navigate to="/feed" replace />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/career-tips" element={<CareerTips />} />
+            <Route path="/activity" element={<ActivityLog />} />
+            <Route path="/insights" element={<Insights />} />
             <Route path="/user/:userId" element={<UserProfile />} />
             {/* Employer Routes (protected by EmployerRoute) */}
             <Route path="/employer" element={<EmployerRoute />}>

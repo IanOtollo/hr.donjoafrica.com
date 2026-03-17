@@ -30,8 +30,12 @@ const stageColors = {
 
 export default function Ventures() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [ventures, setVentures] = useState<Venture[]>([]);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) navigate('/auth');
+  }, [isAuthenticated, isLoading, navigate]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);

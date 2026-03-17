@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
 import { RocketLoader } from '@/components/ui/RocketLoader';
 
 const ADMIN_ROLES = ['employer', 'investor'] as const;
@@ -24,8 +24,8 @@ export function AdminRoute({ children }: AdminRouteProps) {
       navigate('/auth');
       return;
     }
-    if (!isAdminRole(profile?.user_type)) navigate('/feed');
-  }, [profile?.user_type, isLoading, isAuthenticated, navigate]);
+    if (!isHardcodedAdmin(user?.email) && !isAdminRole(profile?.user_type)) navigate('/feed');
+  }, [profile?.user_type, user?.email, isLoading, isAuthenticated, navigate]);
 
   if (isLoading) {
     return (

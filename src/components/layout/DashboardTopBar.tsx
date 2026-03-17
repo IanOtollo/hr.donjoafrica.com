@@ -25,6 +25,11 @@ const routeLabels: Record<string, string> = {
   '/employer/settings/account': 'Account',
   '/employer/shortlist': 'My Shortlist',
   '/invest': 'Deal Flow',
+  '/resources': 'Resources',
+  '/career-tips': 'Career Tips',
+  '/activity': 'Activity Log',
+  '/insights': 'Insights',
+  '/messages': 'Messages',
 };
 
 function getBreadcrumbs(pathname: string): { label: string; path: string }[] {

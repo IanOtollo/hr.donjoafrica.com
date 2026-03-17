@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
 
 const ADMIN_ROLES = ['employer', 'investor'];
 const FOUNDER_ROLES = ['founder'];
@@ -22,11 +22,18 @@ export function isApplicantRole(userType?: string): boolean {
  * Redirects authenticated users to their role-appropriate dashboard when visiting /feed or /dashboard.
  */
 export function useRoleBasedRedirect() {
-  const { profile, isLoading, isAuthenticated } = useAuth();
+  const { profile, user, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isHardcodedAdminUser = isHardcodedAdmin(user?.email);
+
   useEffect(() => {
-    if (isLoading || !isAuthenticated || !profile?.user_type) return;
+    if (isLoading || !isAuthenticated) return;
+    if (isHardcodedAdminUser && (location.pathname === '/feed' || location.pathname === '/dashboard')) {
+      navigate('/admin', { replace: true });
+      return;
+    }
+    if (!profile?.user_type) return;
 
     const path = location.pathname;
     if (path === '/feed' || path === '/dashboard') {
@@ -36,7 +43,7 @@ export function useRoleBasedRedirect() {
         navigate('/founder', { replace: true });
       }
     }
-  }, [profile?.user_type, isLoading, isAuthenticated, navigate, location.pathname]);
+  }, [profile?.user_type, user?.email, isLoading, isAuthenticated, navigate, location.pathname, isHardcodedAdminUser]);
 }
 
 /**

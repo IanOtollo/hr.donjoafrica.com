@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
 import { isAdminRole, isFounderRole, isApplicantRole } from '@/components/auth/ProtectedRoute';
 import { RocketLoader } from '@/components/ui/RocketLoader';
 import Auth from './Auth';
@@ -10,8 +10,10 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated && profile?.user_type) {
-      if (isAdminRole(profile.user_type)) {
+    if (!isLoading && isAuthenticated) {
+      if (isHardcodedAdmin(user?.email)) {
+        navigate('/admin', { replace: true });
+      } else if (profile?.user_type && isAdminRole(profile.user_type)) {
         navigate('/admin', { replace: true });
       } else if (isFounderRole(profile.user_type)) {
         navigate('/founder', { replace: true });
@@ -23,7 +25,7 @@ const Index = () => {
     } else if (!isLoading && isAuthenticated) {
       navigate('/feed', { replace: true });
     }
-  }, [isAuthenticated, isLoading, profile?.user_type, navigate]);
+  }, [isAuthenticated, isLoading, profile?.user_type, user?.email, navigate]);
 
   if (isLoading) {
     return (

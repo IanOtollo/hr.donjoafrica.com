@@ -16,6 +16,12 @@ interface Profile {
   avatar?: string | null;
 }
 
+/** Hardcoded admin - use for demo when DB role not set. Change email as needed. */
+export const HARDCODED_ADMIN_EMAIL = 'mbuthia711@gmail.com';
+export function isHardcodedAdmin(email?: string | null) {
+  return email === HARDCODED_ADMIN_EMAIL;
+}
+
 /** Matches Supabase app_role enum */
 type AppRole = 'talent' | 'employer' | 'founder' | 'investor' | 'judge';
 
@@ -47,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, userEmail?: string | null) => {
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select('*')
@@ -63,8 +69,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .maybeSingle();
 
     if (!profileError && profileData) {
-      const userType = (roleData as UserRoleRow | null)?.role || profileData.user_type;
+      let userType = (roleData as UserRoleRow | null)?.role || profileData.user_type;
+      if (userEmail === HARDCODED_ADMIN_EMAIL) userType = 'employer';
       setProfile({ ...profileData, user_type: userType } as Profile);
+    } else if (userEmail === HARDCODED_ADMIN_EMAIL) {
+      setProfile({ id: userId, user_type: 'employer' } as Profile);
     }
   };
 
@@ -77,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         // Use setTimeout to avoid Supabase deadlock issues
         setTimeout(() => {
-          fetchProfile(session.user.id);
+          fetchProfile(session.user.id, session.user.email);
         }, 0);
       } else {
         setProfile(null);
@@ -118,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(currentSession?.user ?? null);
         
         if (currentSession?.user) {
-          await fetchProfile(currentSession.user.id);
+          await fetchProfile(currentSession.user.id, currentSession.user.email);
         }
       } catch (err) {
         console.error('Error getting initial session:', err);
@@ -205,7 +214,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!error) setProfile((prev) => prev ? { ...prev, ...data } : null);
   };
 
-  const refreshProfile = async () => { if (user) await fetchProfile(user.id); };
+  const refreshProfile = async () => { if (user) await fetchProfile(user.id, user.email); };
 
   return (
     <AuthContext.Provider value={{ user, session, profile, isAuthenticated: !!session, isLoading, login, signup, signInWithOAuth, signInWithWebAuthn, registerWebAuthn, logout, updateProfile, refreshProfile }}>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { RocketLoader } from '@/components/ui/RocketLoader';
 import { isApplicantRole, isAdminRole, isFounderRole } from './ProtectedRoute';
+import { isHardcodedAdmin } from '@/context/AuthContext';
 
 interface ApplicantRouteProps {
   children: React.ReactNode;
@@ -11,7 +12,7 @@ interface ApplicantRouteProps {
 export function ApplicantRoute({ children }: ApplicantRouteProps) {
   const navigate = useNavigate();
   const { profile, user, isLoading, isAuthenticated } = useAuth();
-  const isAdmin = isAdminRole(profile?.user_type);
+  const isAdmin = isHardcodedAdmin(user?.email) || isAdminRole(profile?.user_type);
   const isFounder = isFounderRole(profile?.user_type);
   const isApplicant = isApplicantRole(profile?.user_type);
   const canAccess = isAuthenticated && !isAdmin && (isApplicant || (!isFounder && !profile?.user_type));
