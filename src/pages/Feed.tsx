@@ -57,8 +57,8 @@ export default function Feed() {
           <div className="flex justify-center py-8"><RocketLoader indeterminate label="Loading stats..." /></div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <StatCard title="TOTAL APPLICATIONS" value={String(totalApps)} />
-            <StatCard title="ACTIVE VENTURES" value={`${activeVentures}`} />
+            <StatCard title={isAdmin ? 'TOTAL APPLICATIONS' : 'JOBS APPLIED'} value={String(totalApps)} />
+            <StatCard title={isAdmin ? 'ACTIVE VENTURES' : 'SHORTLISTED'} value={`${activeVentures}`} />
           </div>
         )}
 

@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-/** Mock fallback for demo when DB returns 0 */
+/** Mock fallback for admin demo only when DB returns 0. Never used for applicants. */
 const MOCK_TOTAL_APPS = 24;
 const MOCK_ACTIVE_VENTURES = 12;
 
-/** Admin: fetch global venture stats. Founder/talent: fetch only their venture count (0 or 1). */
+/** Admin: global venture stats. Applicants: only their job applications. No admin data for normal users. */
 export function useFeedStats(userId?: string, isAdmin?: boolean) {
   return useQuery({
     queryKey: ['feed-stats', userId ?? 'anon', isAdmin],
@@ -26,14 +26,18 @@ export function useFeedStats(userId?: string, isAdmin?: boolean) {
         };
       }
       if (userId) {
-        const { data: founderRows } = await supabase
-          .from('venture_founders')
-          .select('venture_id')
-          .eq('user_id', userId);
-        const n = founderRows?.length ?? 0;
+        const { count: jobsApplied } = await supabase
+          .from('job_applications')
+          .select('*', { count: 'exact', head: true })
+          .eq('applicant_id', userId);
+        const { count: shortlisted } = await supabase
+          .from('job_applications')
+          .select('*', { count: 'exact', head: true })
+          .eq('applicant_id', userId)
+          .eq('status', 'shortlisted');
         return {
-          totalApplications: n > 0 ? n : MOCK_TOTAL_APPS,
-          activeVentures: n > 0 ? n : MOCK_ACTIVE_VENTURES,
+          totalApplications: jobsApplied ?? 0,
+          activeVentures: shortlisted ?? 0,
         };
       }
       return { totalApplications: 0, activeVentures: 0 };
