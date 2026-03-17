@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { useRoleBasedRedirect } from '@/components/auth/ProtectedRoute';
 import { useFeedStats } from '@/hooks/useFeedStats';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -13,7 +13,7 @@ export default function Feed() {
   const navigate = useNavigate();
   const { profile, isLoading, isAuthenticated, user } = useAuth();
   useRoleBasedRedirect();
-  const isAdmin = isHardcodedAdmin(user?.email) || profile?.user_type === 'employer' || profile?.user_type === 'investor';
+  const isAdmin = profile?.user_type === 'employer' || profile?.user_type === 'investor';
   const { data: stats, isLoading: statsLoading } = useFeedStats(user?.id, isAdmin);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function Feed() {
   }, [isAuthenticated, isLoading, navigate]);
 
   const isFounder = profile?.user_type === 'founder';
-  const shouldRedirectToDashboard = isHardcodedAdmin(user?.email) || ((isAdmin || isFounder) && !!profile);
+  const shouldRedirectToDashboard = (isAdmin || isFounder) && !!profile;
   if (isLoading || shouldRedirectToDashboard) {
     return (
       <DashboardLayout>

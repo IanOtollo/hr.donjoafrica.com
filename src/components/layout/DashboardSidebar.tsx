@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import {
   Briefcase,
   Trophy,
@@ -83,7 +83,7 @@ const getManagementItems = (isEmployer: boolean): NavGroup => ({
 export function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, user, logout } = useAuth();
+  const { profile, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['Main Menu', 'Management']);
@@ -106,7 +106,7 @@ export function DashboardSidebar() {
     setIsOpen(false);
   };
 
-  const isAdmin = isHardcodedAdmin(user?.email) || profile?.user_type === 'employer' || profile?.user_type === 'investor';
+  const isAdmin = profile?.user_type === 'employer' || profile?.user_type === 'investor';
   const isFounder = profile?.user_type === 'founder';
   const isApplicant = profile?.user_type === 'talent';
 

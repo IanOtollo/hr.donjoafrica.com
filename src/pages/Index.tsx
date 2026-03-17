@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { isHardcodedAdmin } from '@/context/AuthContext';
 import { isAdminRole, isFounderRole, isApplicantRole } from '@/components/auth/ProtectedRoute';
 import { RocketLoader } from '@/components/ui/RocketLoader';
 import Auth from './Auth';
@@ -11,20 +10,20 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      if (isHardcodedAdmin(user?.email)) {
+    if (!isLoading && isAuthenticated && profile?.user_type) {
+      if (isAdminRole(profile.user_type)) {
         navigate('/admin', { replace: true });
-      } else if (profile?.user_type && isAdminRole(profile.user_type)) {
-        navigate('/admin', { replace: true });
-      } else if (profile?.user_type && isFounderRole(profile.user_type)) {
+      } else if (isFounderRole(profile.user_type)) {
         navigate('/founder', { replace: true });
-      } else if (profile?.user_type && isApplicantRole(profile.user_type)) {
+      } else if (isApplicantRole(profile.user_type)) {
         navigate('/feed', { replace: true });
       } else {
         navigate('/feed', { replace: true });
       }
+    } else if (!isLoading && isAuthenticated) {
+      navigate('/feed', { replace: true });
     }
-  }, [isAuthenticated, isLoading, profile?.user_type, user?.email, navigate]);
+  }, [isAuthenticated, isLoading, profile?.user_type, navigate]);
 
   if (isLoading) {
     return (
