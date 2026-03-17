@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, isHardcodedAdmin } from '@/context/AuthContext';
 import { RocketLoader } from '@/components/ui/RocketLoader';
 
 const EMPLOYER_ROLES = ['employer', 'investor'] as const;
@@ -11,7 +11,8 @@ function isEmployerRole(userType?: string): boolean {
 
 export function EmployerRoute() {
   const navigate = useNavigate();
-  const { profile, isLoading, isAuthenticated } = useAuth();
+  const { profile, user, isLoading, isAuthenticated } = useAuth();
+  const isEmployer = isHardcodedAdmin(user?.email) || isEmployerRole(profile?.user_type);
 
   useEffect(() => {
     if (isLoading) return;
@@ -19,10 +20,10 @@ export function EmployerRoute() {
       navigate('/auth');
       return;
     }
-    if (!isEmployerRole(profile?.user_type)) {
+    if (!isEmployer) {
       navigate('/feed');
     }
-  }, [profile, isLoading, isAuthenticated, navigate]);
+  }, [profile?.user_type, user?.email, isLoading, isAuthenticated, isEmployer, navigate]);
 
   if (isLoading) {
     return (
@@ -32,7 +33,7 @@ export function EmployerRoute() {
     );
   }
 
-  if (!isAuthenticated || !isEmployerRole(profile?.user_type)) {
+  if (!isAuthenticated || !isEmployer) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <RocketLoader indeterminate label="Redirecting..." />
