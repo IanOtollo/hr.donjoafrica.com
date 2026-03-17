@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Users, FileText, Play, CheckCircle, X,
   Calendar, Award, Loader2, AlertCircle, ArrowRight, Download, Eye, Rocket,
-  GitCompare, Sparkles
+  GitCompare, Sparkles, Briefcase
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -396,18 +396,8 @@ export default function AdminPanel() {
                   <StatCard title="REJECTED" value={String(rejectedCount)} />
                 </div>
 
-                {/* Action Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button
-                    onClick={() => navigate('/ventures')}
-                    className="glass-panel p-4 sm:p-6 rounded-2xl text-left hover:opacity-90 transition-all duration-300 group min-w-0"
-                  >
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-white/60 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-white/80">
-                      <Rocket className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-charcoal mb-1">Explore Ventures</h3>
-                    <p className="text-xs sm:text-sm text-cool-grey">Browse startup projects</p>
-                  </button>
+                {/* Admin Action Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <button
                     onClick={() => setActiveTab('review')}
                     className="glass-panel p-4 sm:p-6 rounded-2xl text-left hover:opacity-90 transition-all duration-300 group min-w-0"
@@ -415,8 +405,38 @@ export default function AdminPanel() {
                     <div className="h-10 w-10 sm:h-12 sm:w-12 bg-white/60 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-white/80">
                       <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-charcoal mb-1">Apply as Applicant</h3>
-                    <p className="text-xs sm:text-sm text-cool-grey">Review video submissions</p>
+                    <h3 className="font-semibold text-charcoal mb-1">Review Queue</h3>
+                    <p className="text-xs sm:text-sm text-cool-grey">{pendingCount} pending submissions</p>
+                  </button>
+                  <button
+                    onClick={() => navigate('/employer/jobs/create')}
+                    className="glass-panel p-4 sm:p-6 rounded-2xl text-left hover:opacity-90 transition-all duration-300 group min-w-0"
+                  >
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-white/60 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-white/80">
+                      <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-charcoal mb-1">Job Postings</h3>
+                    <p className="text-xs sm:text-sm text-cool-grey">Create & manage jobs</p>
+                  </button>
+                  <button
+                    onClick={() => navigate('/employer')}
+                    className="glass-panel p-4 sm:p-6 rounded-2xl text-left hover:opacity-90 transition-all duration-300 group min-w-0"
+                  >
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-white/60 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-white/80">
+                      <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-charcoal mb-1">Jobs Applied</h3>
+                    <p className="text-xs sm:text-sm text-cool-grey">View applicants by job</p>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('analytics')}
+                    className="glass-panel p-4 sm:p-6 rounded-2xl text-left hover:opacity-90 transition-all duration-300 group min-w-0"
+                  >
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-white/60 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-white/80">
+                      <Award className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-charcoal mb-1">Analytics</h3>
+                    <p className="text-xs sm:text-sm text-cool-grey">Reviews & insights</p>
                   </button>
                 </div>
 

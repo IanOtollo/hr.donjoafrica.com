@@ -23,7 +23,7 @@ export default function Feed() {
   }, [isAuthenticated, isLoading, navigate]);
 
   const isFounder = profile?.user_type === 'founder';
-  const shouldRedirectToDashboard = (isAdmin || isFounder) && !!profile;
+  const shouldRedirectToDashboard = isHardcodedAdmin(user?.email) || ((isAdmin || isFounder) && !!profile);
   if (isLoading || shouldRedirectToDashboard) {
     return (
       <DashboardLayout>
