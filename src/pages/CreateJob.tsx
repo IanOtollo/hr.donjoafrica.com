@@ -185,7 +185,6 @@ export default function CreateJob() {
             skills_required: validation.data.skills_required,
             benefits: validation.data.benefits,
             application_deadline: deadline || null,
-            video_prompt: videoPrompt.trim() || null,
           })
           .eq('id', jobId)
           .eq('employer_id', user?.id);
