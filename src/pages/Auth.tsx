@@ -108,13 +108,16 @@ export default function Auth() {
       return;
     }
 
-    // Validate password (only for signup)
+    // Validate password
     if (!isLogin) {
       const passwordResult = passwordSchema.safeParse(password);
       if (!passwordResult.success) {
         toast.error(passwordResult.error.errors[0].message);
         return;
       }
+    } else if (password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
     }
 
     setLoading(true);

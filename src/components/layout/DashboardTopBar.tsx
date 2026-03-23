@@ -29,7 +29,6 @@ const routeLabels: Record<string, string> = {
   '/career-tips': 'Career Tips',
   '/activity': 'Activity Log',
   '/insights': 'Insights',
-  '/messages': 'Messages',
 };
 
 function getBreadcrumbs(pathname: string): { label: string; path: string }[] {

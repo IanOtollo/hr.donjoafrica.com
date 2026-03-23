@@ -16,25 +16,32 @@ export default function ApplicantVideoUpload() {
   const { uploadVideo, uploading } = useVideoUpload();
   const [done, setDone] = useState(false);
 
+  const [submitting, setSubmitting] = useState(false);
+
   const handleVideoReady = async (blob: Blob) => {
     if (!user?.id) {
       toast.error('Please log in to upload');
       return;
     }
+    if (submitting) return;
+    setSubmitting(true);
+
     const videoUrl = await uploadVideo(blob, user.id);
     if (!videoUrl) {
       toast.error('Failed to upload video');
+      setSubmitting(false);
       return;
     }
-    const { error } = await supabase.from('videos').insert({
+    const { error } = await supabase.from('videos').upsert({
       user_id: user.id,
       video_url: videoUrl,
       title: 'Portfolio Video',
       description: 'Video portfolio submission',
       is_private: false,
-    });
+    }, { onConflict: 'id' });
     if (error) {
       toast.error('Failed to save video');
+      setSubmitting(false);
       return;
     }
     toast.success('Video added to your portfolio!');
@@ -78,10 +85,10 @@ export default function ApplicantVideoUpload() {
           ) : (
             <VideoPitchRecorder onVideoReady={handleVideoReady} maxDuration={60} />
           )}
-          {uploading && (
+          {(uploading || submitting) && (
             <div className="mt-4 flex items-center gap-2 text-cool-grey text-sm">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Uploading...
+              {uploading ? 'Uploading video...' : 'Saving to portfolio...'}
             </div>
           )}
         </NeoCard>
