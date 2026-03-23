@@ -91,7 +91,7 @@ export default function CreateJob() {
       setSkills(Array.isArray(data.skills_required) ? data.skills_required : []);
       setBenefits(Array.isArray(data.benefits) ? data.benefits : []);
       setDeadline(data.application_deadline ? data.application_deadline.slice(0, 10) : '');
-      setVideoPrompt((data as Record<string, unknown>)?.video_prompt as string || '');
+      // video_prompt column doesn't exist in job_postings table
     };
     fetchJob();
   }, [jobId, user?.id, profile?.username]);
