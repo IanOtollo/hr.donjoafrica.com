@@ -85,10 +85,10 @@ export default function ApplicantVideoUpload() {
           ) : (
             <VideoPitchRecorder onVideoReady={handleVideoReady} maxDuration={60} />
           )}
-          {uploading && (
+          {(uploading || submitting) && (
             <div className="mt-4 flex items-center gap-2 text-cool-grey text-sm">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Uploading...
+              {uploading ? 'Uploading video...' : 'Saving to portfolio...'}
             </div>
           )}
         </NeoCard>
