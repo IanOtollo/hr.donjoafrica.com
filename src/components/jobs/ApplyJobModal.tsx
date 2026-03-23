@@ -136,11 +136,12 @@ export function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalProps) {
         pitchVideoId = selectedVideoIds[0];
       }
 
+      // Note: pitch_video_id is stored via the video record itself (linked to user)
+      // The job_applications table only stores job_id, applicant_id, cover_message
       const { error } = await supabase.from('job_applications').insert({
         job_id: job.id,
         applicant_id: user.id,
         cover_message: coverMessage || null,
-        pitch_video_id: pitchVideoId,
       });
 
       if (error) {

@@ -91,7 +91,7 @@ export default function CreateJob() {
       setSkills(Array.isArray(data.skills_required) ? data.skills_required : []);
       setBenefits(Array.isArray(data.benefits) ? data.benefits : []);
       setDeadline(data.application_deadline ? data.application_deadline.slice(0, 10) : '');
-      setVideoPrompt((data as Record<string, unknown>)?.video_prompt as string || '');
+      // video_prompt column doesn't exist in job_postings table
     };
     fetchJob();
   }, [jobId, user?.id, profile?.username]);
@@ -185,7 +185,6 @@ export default function CreateJob() {
             skills_required: validation.data.skills_required,
             benefits: validation.data.benefits,
             application_deadline: deadline || null,
-            video_prompt: videoPrompt.trim() || null,
           })
           .eq('id', jobId)
           .eq('employer_id', user?.id);
@@ -206,7 +205,6 @@ export default function CreateJob() {
           skills_required: validation.data.skills_required,
           benefits: validation.data.benefits,
           application_deadline: deadline || null,
-          video_prompt: videoPrompt.trim() || null,
         });
         if (error) throw error;
         toast.success('Job posting created!', { icon: null });

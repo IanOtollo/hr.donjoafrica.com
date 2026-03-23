@@ -63,7 +63,7 @@ export default function CreateChallenge() {
       setDeadline(formatDeadlineForInput(data.deadline));
       setIsFeatured(data.is_featured ?? false);
       setSkills(Array.isArray(data.skills_tags) ? data.skills_tags : []);
-      setVideoPrompt((data as Record<string, unknown>)?.video_prompt as string || '');
+      // video_prompt column doesn't exist in challenges table
     };
     fetchChallenge();
   }, [challengeId, user?.id]);
