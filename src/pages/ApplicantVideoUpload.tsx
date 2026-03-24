@@ -32,13 +32,13 @@ export default function ApplicantVideoUpload() {
       setSubmitting(false);
       return;
     }
-    const { error } = await supabase.from('videos').upsert({
+    const { error } = await supabase.from('videos').insert({
       user_id: user.id,
       video_url: videoUrl,
       title: 'Portfolio Video',
       description: 'Video portfolio submission',
       is_private: false,
-    }, { onConflict: 'id' });
+    });
     if (error) {
       toast.error('Failed to save video');
       setSubmitting(false);
