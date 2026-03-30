@@ -28,7 +28,6 @@ interface NavItem {
 const adminNavItems: NavItem[] = [
   { icon: LayoutDashboard, label: 'Admin Dashboard', path: '/admin?tab=overview' },
   { icon: Briefcase, label: 'CMS (Job Postings)', path: '/employer' },
-  { icon: Users, label: 'Talent Management', path: '/admin?tab=pipeline' },
   { icon: UserCog, label: 'User Management', path: '/admin?tab=review' },
   { icon: BarChart3, label: 'Analytics', path: '/admin?tab=analytics' },
   { icon: Megaphone, label: 'Announcements', path: '/admin?tab=overview' },

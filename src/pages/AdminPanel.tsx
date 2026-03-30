@@ -292,8 +292,16 @@ export default function AdminPanel() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">Talent Pipeline</h1>
-            <p className="text-muted-foreground text-sm">Review, rate, and shortlist candidates with AI-powered insights.</p>
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">
+              {activeTab === 'overview' ? 'Admin Dashboard' : 
+               activeTab === 'analytics' ? 'Platform Analytics' : 
+               'User Management'}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              {activeTab === 'overview' ? 'Overview of platform activity and pending reviews.' : 
+               activeTab === 'analytics' ? 'System health and engagement metrics.' : 
+               'Review, rate, and shortlist candidates with AI-powered insights.'}
+            </p>
           </div>
           <Button
             size="sm"
