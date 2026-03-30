@@ -50,15 +50,24 @@ export function ApplicantSidebar() {
 
       <aside
         className={cn(
-          "fixed lg:sticky top-0 left-0 h-full z-50 flex flex-col transition-all duration-300 ease-in-out bg-white/80 backdrop-blur-xl border-r border-border/50 shadow-sm",
-          isCollapsed ? "w-20" : "w-72",
+          "fixed top-0 left-0 h-full z-50 flex flex-col transition-all duration-300 ease-in-out bg-white/90 backdrop-blur-xl border-r border-[#e2e8f0]/60 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]",
+          isCollapsed ? "w-20" : "w-64",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
+        {/* DeskTop Toggle Button (Absolute over border) */}
+        {!isMobileOpen && (
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hidden lg:flex absolute -right-3 top-20 h-6 w-6 items-center justify-center rounded-full border border-border bg-white shadow-sm hover:bg-secondary transition-all z-50"
+          >
+            {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+          </button>
+        )}
         {/* Brand */}
-        <div className={cn("p-6 flex items-center gap-3", isCollapsed && "justify-center")}>
-          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-            <Briefcase className="h-6 w-6 text-primary" />
+        <div className={cn("p-6 flex items-center gap-3", isCollapsed && "justify-center px-4")}>
+          <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+            <Briefcase className="h-5 w-5 text-white" />
           </div>
           {!isCollapsed && (
             <div className="min-w-0">
@@ -68,14 +77,7 @@ export function ApplicantSidebar() {
           )}
         </div>
 
-        <div className="flex justify-end px-4 mb-4">
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1.5 rounded-lg hover:bg-secondary/50 transition-colors"
-          >
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </button>
-        </div>
+
 
         <nav className="flex-1 px-3 space-y-1">
           {applicantNavItems.map((item) => {

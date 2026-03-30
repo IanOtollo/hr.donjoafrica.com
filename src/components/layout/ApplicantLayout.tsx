@@ -24,8 +24,8 @@ export function ApplicantLayout({ children }: ApplicantLayoutProps) {
       
       {/* Main Content Area */}
       <div className={cn(
-        "flex-1 flex flex-col transition-all duration-300 min-w-0 overflow-x-hidden",
-        isCollapsed ? "lg:ml-20" : "lg:ml-72"
+        "flex-1 flex flex-col transition-all duration-300",
+        isCollapsed ? "lg:ml-20" : "lg:ml-64"
       )}>
         {/* Top Bar for Applicant */}
         <DashboardTopBar />

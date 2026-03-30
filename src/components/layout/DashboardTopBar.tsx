@@ -56,8 +56,8 @@ export function DashboardTopBar() {
   const { setMobileOpen } = useSidebar();
 
   return (
-    <header className="sticky top-0 z-30 glass-panel">
-      <div className="flex items-center justify-between px-4 lg:px-8 py-4">
+    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-border/50 shadow-sm">
+      <div className="flex items-center justify-between px-4 lg:px-6 py-4">
         {/* Mobile Toggle & Breadcrumbs */}
         <div className="flex items-center gap-3">
           <button
