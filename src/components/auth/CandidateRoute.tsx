@@ -9,11 +9,11 @@ function isFounderRole(userType?: string): boolean {
   return !!userType && FOUNDER_ROLES.includes(userType as typeof FOUNDER_ROLES[number]);
 }
 
-interface FounderRouteProps {
+interface CandidateRouteProps {
   children: React.ReactNode;
 }
 
-export function FounderRoute({ children }: FounderRouteProps) {
+export function CandidateRoute({ children }: CandidateRouteProps) {
   const navigate = useNavigate();
   const { profile, isLoading, isAuthenticated } = useAuth();
 

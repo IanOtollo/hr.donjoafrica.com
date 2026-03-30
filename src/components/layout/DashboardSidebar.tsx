@@ -9,7 +9,6 @@ import {
   Bell,
   User,
   Settings,
-  MessageSquare,
   Rocket,
   LayoutDashboard,
   LogOut,
@@ -21,8 +20,6 @@ import {
   TrendingUp,
   Menu,
   X,
-  BookOpen,
-  Lightbulb,
   Activity,
   BarChart3
 } from 'lucide-react';
@@ -41,21 +38,16 @@ interface NavGroup {
 }
 
 const baseMenuItems = [
-  { icon: Rocket, label: 'Ventures', path: '/ventures' },
-  { icon: MessageSquare, label: 'Messages', path: '/messages' },
-  { icon: BookOpen, label: 'Resources', path: '/resources' },
-  { icon: Lightbulb, label: 'Career Tips', path: '/career-tips' },
   { icon: Briefcase, label: 'Jobs', path: '/jobs' },
   { icon: Trophy, label: 'Challenges', path: '/challenges' },
 ];
 
 const founderItems: NavGroup = {
-  title: 'Venture Hub',
+  title: 'Hiring Hub',
   items: [
     { icon: LayoutDashboard, label: 'My Dashboard', path: '/founder' },
-    { icon: Plus, label: 'Apply to Program', path: '/apply' },
-    { icon: Rocket, label: 'My Ventures', path: '/ventures' },
-    { icon: Briefcase, label: 'Jobs', path: '/jobs' },
+    { icon: Plus, label: 'Post a Role', path: '/apply' },
+    { icon: Briefcase, label: 'Manage Jobs', path: '/jobs' },
   ],
 };
 
@@ -64,25 +56,21 @@ const applicantItems: NavGroup = {
   items: [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/feed' },
     { icon: User, label: 'My Portfolio', path: '/profile' },
-    { icon: Bookmark, label: 'Job Status', path: '/applicant' },
+    { icon: Bookmark, label: 'Application Status', path: '/applicant' },
     { icon: Briefcase, label: 'Find Jobs', path: '/jobs' },
     { icon: Trophy, label: 'Challenges', path: '/challenges' },
-    { icon: Lightbulb, label: 'Career Tips', path: '/career-tips' },
-    { icon: BookOpen, label: 'Resources', path: '/resources' },
   ],
 };
 
 const adminItems: NavGroup = {
-  title: 'Program Admin',
+  title: 'Platform Admin',
   items: [
-    { icon: TrendingUp, label: 'Venture Engine', path: '/admin' },
-    { icon: Building, label: 'Employer Hub', path: '/employer' },
+    { icon: TrendingUp, label: 'Dashboard', path: '/admin' },
+    { icon: Building, label: 'Client Hub', path: '/employer' },
     { icon: Plus, label: 'Post a Job', path: '/employer/jobs/create' },
     { icon: Trophy, label: 'Challenges', path: '/challenges' },
     { icon: Bookmark, label: 'Shortlist', path: '/employer/shortlist' },
     { icon: Activity, label: 'Activity Log', path: '/activity' },
-    { icon: BarChart3, label: 'Insights', path: '/insights' },
-    { icon: BookOpen, label: 'Resources', path: '/resources' },
   ],
 };
 

@@ -6,25 +6,22 @@ import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/hooks/useNotifications';
 
 const applicantNavItems = [
-  { icon: Home, label: 'Home', path: '/feed' },
+  { icon: Home, label: 'Dashboard', path: '/feed' },
   { icon: Briefcase, label: 'Jobs', path: '/jobs' },
-  { icon: null, label: 'Create', path: '/create' },
-  { icon: Bell, label: 'Alerts', path: '/notifications' },
+  { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 
 const employerNavItems = [
   { icon: Briefcase, label: 'Jobs', path: '/employer' },
   { icon: Trophy, label: 'Challenges', path: '/employer', tab: 'challenges' },
-  { icon: null, label: 'Create', path: '/employer/jobs/create' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 
 const founderNavItems = [
   { icon: Rocket, label: 'Dashboard', path: '/founder' },
   { icon: Briefcase, label: 'Jobs', path: '/jobs' },
-  { icon: null, label: 'Apply', path: '/apply' },
-  { icon: Bell, label: 'Alerts', path: '/notifications' },
+  { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 

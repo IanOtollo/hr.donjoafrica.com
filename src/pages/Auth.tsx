@@ -406,38 +406,38 @@ export default function Auth() {
                 <User className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-charcoal">Apply as Applicant</h3>
-                <p className="text-xs text-cool-grey">Submit your video portfolio to find your next hire</p>
+                <h3 className="font-semibold text-charcoal">Join as Candidate</h3>
+                <p className="text-xs text-cool-grey">Showcase your skills to get hired</p>
               </div>
             </div>
             <p className="text-sm text-cool-grey pl-15">
-              Join our cohort program, get mentorship, and pitch to investors.
+              Build your professional profile, upload project showcases, and stand out to employers.
             </p>
             <button 
               className="w-full bg-primary text-primary-foreground py-3 rounded-2xl font-medium hover:bg-primary/90 transition-all duration-300 flex items-center justify-center gap-2 pointer-events-auto"
               onClick={() => { setUserType('talent'); setIsLogin(false); setStep('login'); }}
             >
-              Apply Now
+              Get Started
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>
           
-          {/* Admin/Program Manager Option */}
+          {/* Admin/Employer Option */}
           <div className="glass-panel p-5 rounded-3xl space-y-3">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 bg-white/60 rounded-2xl flex items-center justify-center">
                 <Briefcase className="h-6 w-6 text-charcoal" />
               </div>
               <div>
-                <h3 className="font-semibold text-charcoal">Program Manager / Admin</h3>
-                <p className="text-xs text-cool-grey">Manage cohorts and review applications</p>
+                <h3 className="font-semibold text-charcoal">Recruiter / Employer</h3>
+                <p className="text-xs text-cool-grey">Post vacancies and review talent</p>
               </div>
             </div>
             <button 
               className="w-full soft-ui-card py-3 font-medium text-[#1e293b] hover:opacity-90 transition-all duration-300 flex items-center justify-center gap-2 pointer-events-auto"
               onClick={() => { setUserType('employer'); setIsLogin(false); setStep('login'); }}
             >
-              Admin Login
+              Employer Login
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>

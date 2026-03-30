@@ -1,4 +1,8 @@
 import { ReactNode, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import { AdminLayout } from './AdminLayout';
+import { ApplicantLayout } from './ApplicantLayout';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardTopBar } from './DashboardTopBar';
 
@@ -7,25 +11,22 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  // Theme sync: ensure light theme on mount to avoid loader/UI conflict during initial render
+  const { profile } = useAuth();
+  const location = useLocation();
+
+  // Theme sync: ensure light theme on mount
   useEffect(() => {
     document.documentElement.classList.remove('dark');
   }, []);
-  return (
-    <div className="min-h-screen min-h-dvh flex relative overflow-x-hidden w-full max-w-full">
-      {/* Sidebar */}
-      <DashboardSidebar />
-      
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col ml-0 lg:ml-72 transition-all duration-300 min-w-0 overflow-x-hidden">
-        {/* Top Bar */}
-        <DashboardTopBar />
-        
-        {/* Page Content - mobile-first, safe-area, no horizontal scroll */}
-        <main className="flex-1 p-4 lg:p-8 pb-24 lg:pb-8 safe-area-pb overflow-x-hidden w-full max-w-full">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+
+  const isAdminPath = location.pathname.startsWith('/admin') || location.pathname.startsWith('/employer');
+  const isAdminUser = profile?.user_type === 'employer' || profile?.user_type === 'judge';
+
+  // If it's an admin path or an admin user, use the AdminLayout
+  if (isAdminPath || isAdminUser) {
+    return <AdminLayout>{children}</AdminLayout>;
+  }
+
+  // Default to ApplicantLayout
+  return <ApplicantLayout>{children}</ApplicantLayout>;
 }

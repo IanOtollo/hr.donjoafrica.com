@@ -44,7 +44,6 @@ export default function Notifications() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-charcoal">Notifications</h1>
-            <p className="text-cool-grey text-sm">Job and pitch review updates</p>
           </div>
           {unreadCount > 0 && (
             <Button variant="outline" size="sm" onClick={() => markAllRead()} className="neo-extruded border-none">

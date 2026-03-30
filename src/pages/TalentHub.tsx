@@ -7,11 +7,12 @@ import { NeoCard, NeoCardHeader, NeoCardTitle, NeoCardContent } from '@/componen
 import { 
   Rocket, FileText, Users, Calendar, Bell, Briefcase,
   Clock, CheckCircle, AlertCircle,
-  Video, MessageSquare
+  Video, MessageSquare, BriefcaseBusiness
 } from 'lucide-react';
 import { RocketLoader } from '@/components/ui/RocketLoader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 const mentorSessions = [
   { id: '1', mentorName: 'Dr. Sarah Kimani', topic: 'Go-to-Market Strategy', date: '2026-02-12', time: '10:00 AM', status: 'upcoming' },
@@ -124,7 +125,7 @@ function VentureCard({ venture, navigate }: { venture: FounderVenture; navigate:
   );
 }
 
-export default function FounderDashboard() {
+export default function TalentHub() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const { data: ventures, isLoading } = useFounderVentures(user?.id);
@@ -266,7 +267,7 @@ export default function FounderDashboard() {
             <NeoCardHeader>
               <NeoCardTitle className="text-lg flex items-center gap-2">
                 <Bell className="h-5 w-5 text-primary" />
-                Cohort Announcements
+                Platform Updates
               </NeoCardTitle>
             </NeoCardHeader>
             <NeoCardContent className="space-y-3 mt-4">

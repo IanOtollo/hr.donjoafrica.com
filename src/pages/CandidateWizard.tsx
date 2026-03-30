@@ -69,7 +69,7 @@ const steps: { id: WizardStep; title: string; icon: React.ReactNode }[] = [
   { id: 'review', title: 'Review', icon: <Check className="h-4 w-4" /> },
 ];
 
-export default function FounderWizard() {
+export default function CandidateWizard() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editVentureId = searchParams.get('edit');
@@ -269,7 +269,7 @@ export default function FounderWizard() {
         navigate('/founder');
       }
     } catch (error: unknown) {
-      console.error('[FounderWizard] Submit error:', error);
+      console.error('[CandidateWizard] Submit error:', error);
       const msg = error instanceof Error ? error.message : 'Failed to submit. Please try again.';
       toast.error(msg);
     } finally {

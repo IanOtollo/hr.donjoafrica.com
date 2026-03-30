@@ -1,34 +1,30 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Search, Bell, ChevronRight } from 'lucide-react';
+import { Search, Bell, ChevronRight, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useSidebar } from '@/context/SidebarContext';
 
 const routeLabels: Record<string, string> = {
   '/': 'Dashboard',
   '/feed': 'Dashboard',
-  '/ventures': 'Ventures',
-  '/jobs': 'Jobs',
-  '/challenges': 'Challenges',
-  '/messages': 'Messages',
+  '/ventures': 'Applicants',
+  '/jobs': 'Job Postings',
+  '/challenges': 'Skill Assessments',
   '/notifications': 'Notifications',
-  '/profile': 'Profile',
-  '/apply': 'Apply to Program',
+  '/profile': 'My Profile',
+  '/apply': 'Careers',
   '/auth': 'Authentication',
-  '/admin': 'Venture Engine',
-  '/founder': 'Venture Dashboard',
+  '/admin': 'Platform Admin',
+  '/founder': 'Talent Hub',
   '/applicant': 'My Applications',
-  '/employer': 'Employer Dashboard',
-  '/employer/jobs/create': 'Post a Job',
-  '/employer/challenges/create': 'Create Challenge',
+  '/employer': 'Hiring Dashboard',
+  '/employer/jobs/create': 'Create Vacancy',
+  '/employer/challenges/create': 'Add Assessment',
   '/employer/settings': 'Settings',
   '/employer/settings/company': 'Company Profile',
   '/employer/settings/account': 'Account',
-  '/employer/shortlist': 'My Shortlist',
-  '/invest': 'Deal Flow',
-  '/resources': 'Resources',
-  '/career-tips': 'Career Tips',
-  '/activity': 'Activity Log',
-  '/insights': 'Insights',
+  '/employer/shortlist': 'Shortlisted Candidates',
+  '/activity': 'Platform Activity',
 };
 
 function getBreadcrumbs(pathname: string): { label: string; path: string }[] {
@@ -57,12 +53,21 @@ export function DashboardTopBar() {
   const navigate = useNavigate();
   const breadcrumbs = getBreadcrumbs(location.pathname);
   const { unreadCount } = useNotifications();
+  const { setMobileOpen } = useSidebar();
 
   return (
     <header className="sticky top-0 z-30 glass-panel">
       <div className="flex items-center justify-between px-4 lg:px-8 py-4">
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-sm ml-14 lg:ml-0">
+        {/* Mobile Toggle & Breadcrumbs */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="lg:hidden p-2 rounded-xl glass-panel hover:bg-secondary/50 transition-colors"
+            aria-label="Open Sidebar"
+          >
+            <Menu className="h-5 w-5 text-charcoal" />
+          </button>
+          <nav className="flex items-center gap-2 text-sm overflow-hidden">
           {breadcrumbs.map((crumb, index) => (
             <div key={crumb.path} className="flex items-center gap-2">
               {index > 0 && (
@@ -79,7 +84,8 @@ export function DashboardTopBar() {
               </span>
             </div>
           ))}
-        </nav>
+          </nav>
+        </div>
 
         {/* Search & Actions */}
         <div className="flex items-center gap-3">

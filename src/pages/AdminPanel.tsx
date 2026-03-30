@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { NeoCard, NeoCardHeader, NeoCardTitle, NeoCardContent } from '@/components/ui/neo-card';
 import { StatCard } from '@/components/dashboard/StatCard';
-import { useNavigate } from 'react-router-dom';
 import { 
   Users, FileText, Play, CheckCircle, X,
   Calendar, Award, Loader2, AlertCircle, ArrowRight, Download, Eye, Rocket,
@@ -19,15 +19,9 @@ import { toast } from 'sonner';
 import { RocketLoader } from '@/components/ui/RocketLoader';
 import { TalentPipelineCard } from '@/components/admin/TalentPipelineCard';
 import { SmartFilters } from '@/components/admin/SmartFilters';
-import { SystemHealthGauge, EngagementFluxChart, MetricCard, PipelineVelocityGauge, SkillRadarChart, GeospatialHeatmap, ApplicationVelocityChart, CohortCompositionDonut } from '@/components/admin/MedicalChicAnalytics';
+import { SystemHealthGauge, EngagementFluxChart, MetricCard, PipelineVelocityGauge, SkillRadarChart, GeospatialHeatmap, ApplicationVelocityChart } from '@/components/admin/MedicalChicAnalytics';
 
-const mentors = [
-  { id: '1', name: 'Dr. Sarah Kimani', specialty: 'Strategy', available: true },
-  { id: '2', name: 'James Ochieng', specialty: 'Engineering', available: true },
-  { id: '3', name: 'Aisha Mohamed', specialty: 'Product', available: false },
-];
-
-type Tab = 'overview' | 'pipeline' | 'analytics' | 'review' | 'mentors' | 'cohorts';
+type Tab = 'overview' | 'pipeline' | 'analytics' | 'review';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -60,8 +54,24 @@ function getLogicClarityScore(id: string): number {
 
 export default function AdminPanel() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<Tab>('overview');
+  
+  // Sync tab with URL
+  const tabFromUrl = (searchParams.get('tab') as Tab) || 'overview';
+  const [activeTab, setActiveTab] = useState<Tab>(tabFromUrl);
+
+  useEffect(() => {
+    if (tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
+
+  const handleTabChange = (newTab: Tab) => {
+    setSearchParams({ tab: newTab });
+    setActiveTab(newTab);
+  };
+
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [comparePair, setComparePair] = useState<[string, string] | null>(null);
   const [removedVentureIds, setRemovedVentureIds] = useState<Set<string>>(new Set());
@@ -265,8 +275,6 @@ export default function AdminPanel() {
     { id: 'pipeline', label: 'Talent Pipeline' },
     { id: 'analytics', label: 'Analytics' },
     { id: 'review', label: `Review Queue (${pendingCount})` },
-    { id: 'mentors', label: 'Mentors' },
-    { id: 'cohorts', label: 'Cohorts' },
   ];
 
   if (error) {
@@ -305,7 +313,7 @@ export default function AdminPanel() {
           {tabs.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabChange(tab.id)}
               className={`px-4 py-2.5 rounded-sm text-sm font-semibold whitespace-nowrap transition-all duration-300 pointer-events-auto ${
                 activeTab === tab.id
                   ? 'neo-pressed text-foreground ring-2 ring-primary ring-offset-2 ring-offset-background'
@@ -388,10 +396,10 @@ export default function AdminPanel() {
                   </div>
                 )}
 
-                {/* Hero Stats with fallback */}
+                {/* Hero Stats (Real data only) */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <StatCard title="TOTAL APPLICATIONS" value={String((allVentures?.length ?? 0) || MOCK_TOTAL)} change={monthOverMonthChange} changeLabel="vs last month" />
-                  <StatCard title="ACTIVE VENTURES" value={String((shortlistedCount || allVentures?.length) ? shortlistedCount : MOCK_ACTIVE)} />
+                  <StatCard title="TOTAL APPLICATIONS" value={String(allVentures?.length ?? 0)} change={monthOverMonthChange} changeLabel="vs last month" />
+                  <StatCard title="SHORTLISTED" value={String(shortlistedCount)} />
                   <StatCard title="PENDING REVIEW" value={String(pendingCount)} />
                   <StatCard title="REJECTED" value={String(rejectedCount)} />
                 </div>
@@ -436,7 +444,7 @@ export default function AdminPanel() {
                       <Award className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                     </div>
                     <h3 className="font-semibold text-charcoal mb-1">Analytics</h3>
-                    <p className="text-xs sm:text-sm text-cool-grey">Reviews & insights</p>
+                    <p className="text-xs sm:text-sm text-cool-grey">Detailed insights</p>
                   </button>
                 </div>
 
@@ -557,39 +565,16 @@ export default function AdminPanel() {
 
                   <div className="space-y-4 lg:min-w-[300px]">
                     <NeoCard className="p-4 rounded-sm pointer-events-auto">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Cohort Composition</p>
-                      <CohortCompositionDonut
-                        data={(() => {
-                          const ventures = allVentures ?? [];
-                          const counts: Record<string, number> = { Fintech: 0, AgriTech: 0, Health: 0, EdTech: 0, Other: 0 };
-                          ventures.forEach((v) => {
-                            const ind = (v.industry || [])[0]?.toLowerCase() || '';
-                            if (ind.includes('fin') || ind.includes('pay') || ind.includes('bank')) counts.Fintech++;
-                            else if (ind.includes('agri') || ind.includes('farm') || ind.includes('food')) counts.AgriTech++;
-                            else if (ind.includes('health') || ind.includes('med')) counts.Health++;
-                            else if (ind.includes('edu') || ind.includes('learn')) counts.EdTech++;
-                            else counts.Other++;
-                          });
-                          return Object.entries(counts).filter(([, n]) => n > 0).map(([name, value]) => ({ name, value }));
-                        })()}
-                      />
-                    </NeoCard>
-
-                    <NeoCard className="p-4 rounded-sm pointer-events-auto">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Mentor Activity</p>
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
-                        {mentors.map((m) => (
-                          <div key={m.id} className="flex items-center gap-2 py-2 border-b border-border/50 last:border-0">
-                            <div className="h-8 w-8 neo-subtle rounded-sm flex items-center justify-center shrink-0">
-                              <Users className="h-4 w-4 text-primary" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium text-foreground truncate">{m.name}</p>
-                              <p className="text-[10px] text-muted-foreground">Reviewed 2 ventures this week</p>
-                            </div>
-                            <Badge className={m.available ? 'bg-green-500/10 text-green-600 text-[10px]' : 'bg-red-500/10 text-red-600 text-[10px]'}>{m.available ? 'Active' : 'Busy'}</Badge>
-                          </div>
-                        ))}
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">System Overview</p>
+                      <div className="space-y-4">
+                        <div className="p-4 neo-subtle rounded-sm">
+                          <p className="text-2xl font-bold text-foreground">{allVentures?.length || 0}</p>
+                          <p className="text-xs text-muted-foreground">Total Candidates</p>
+                        </div>
+                        <div className="p-4 neo-subtle rounded-sm">
+                          <p className="text-2xl font-bold text-foreground">{shortlistedCount}</p>
+                          <p className="text-xs text-muted-foreground">Shortlisted</p>
+                        </div>
                       </div>
                     </NeoCard>
                   </div>
@@ -745,58 +730,7 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Mentors Tab */}
-        {activeTab === 'mentors' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {mentors.map(m => (
-              <NeoCard key={m.id} className="p-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-12 w-12 neo-pressed rounded-2xl flex items-center justify-center">
-                    <Users className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">{m.name}</p>
-                    <p className="text-muted-foreground text-sm">{m.specialty}</p>
-                  </div>
-                </div>
-                <Badge className={m.available ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}>
-                  {m.available ? 'Available' : 'Busy'}
-                </Badge>
-              </NeoCard>
-            ))}
-          </div>
-        )}
 
-        {/* Cohorts Tab */}
-        {activeTab === 'cohorts' && (
-          <div className="space-y-4">
-            <NeoCard className="p-5 lg:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-12 w-12 neo-pressed rounded-2xl flex items-center justify-center">
-                  <Award className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground text-lg">Cohort 3 — 2026</p>
-                  <p className="text-muted-foreground text-sm">Active · {shortlistedCount} ventures · Demo Day: March 15</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="neo-subtle rounded-2xl p-3 text-center">
-                  <p className="text-2xl font-bold text-foreground">{shortlistedCount}</p>
-                  <p className="text-xs text-muted-foreground">Ventures</p>
-                </div>
-                <div className="neo-subtle rounded-2xl p-3 text-center">
-                  <p className="text-2xl font-bold text-foreground">8</p>
-                  <p className="text-xs text-muted-foreground">Mentors</p>
-                </div>
-                <div className="neo-subtle rounded-2xl p-3 text-center">
-                  <p className="text-2xl font-bold text-foreground">35d</p>
-                  <p className="text-xs text-muted-foreground">To Demo Day</p>
-                </div>
-              </div>
-            </NeoCard>
-          </div>
-        )}
 
         <PitchVideoModal
           isOpen={!!selectedVideo && !comparePair}

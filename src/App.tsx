@@ -9,10 +9,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AdminRoute } from "@/components/auth/AdminRoute";
-import { FounderRoute } from "@/components/auth/FounderRoute";
+import { CandidateRoute } from "@/components/auth/CandidateRoute";
 import { ApplicantRoute } from "@/components/auth/ApplicantRoute";
 import { EmployerRoute } from "@/components/auth/EmployerRoute";
 import { AuthProvider } from "@/context/AuthContext";
+import { SidebarProvider } from '@/context/SidebarContext';
 import { PWAUpdatePrompt } from "@/components/pwa/PWAUpdatePrompt";
 import Index from "./pages/Index";
 import Feed from "./pages/Feed";
@@ -24,15 +25,11 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 
 import UserProfile from "./pages/UserProfile";
-import Ventures from "./pages/Ventures";
-import Messages from "./pages/Messages";
-import VentureDetail from "./pages/VentureDetail";
-import Resources from "./pages/Resources";
-import CareerTips from "./pages/CareerTips";
 import ActivityLog from "./pages/ActivityLog";
-import Insights from "./pages/Insights";
 import NotFound from "./pages/NotFound";
 
+const TalentHub = lazy(() => import("./pages/TalentHub"));
+const CandidateWizard = lazy(() => import("./pages/CandidateWizard"));
 const Create = lazy(() => import("./pages/Create"));
 const EditProfile = lazy(() => import("./pages/EditProfile"));
 const EmployerDashboard = lazy(() => import("./pages/EmployerDashboard"));
@@ -44,8 +41,6 @@ const CreateJob = lazy(() => import("./pages/CreateJob"));
 const CreateChallenge = lazy(() => import("./pages/CreateChallenge"));
 const JobApplicants = lazy(() => import("./pages/JobApplicants"));
 const ChallengeSubmissions = lazy(() => import("./pages/ChallengeSubmissions"));
-const FounderWizard = lazy(() => import("./pages/FounderWizard"));
-const FounderDashboard = lazy(() => import("./pages/FounderDashboard"));
 const ApplicantDashboard = lazy(() => import("./pages/ApplicantDashboard"));
 const ApplicantVideoUpload = lazy(() => import("./pages/ApplicantVideoUpload"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
@@ -55,6 +50,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false} storageKey="donjo-theme">
+    <SidebarProvider>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
@@ -75,13 +71,14 @@ const App = () => (
             <Route path="/feed" element={<Feed />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/ventures" element={<Ventures />} />
-            <Route path="/ventures/:id" element={<VentureDetail />} />
-            <Route path="/apply" element={<FounderRoute><FounderWizard /></FounderRoute>} />
-            <Route path="/founder" element={<FounderRoute><FounderDashboard /></FounderRoute>} />
+            <Route path="/ventures" element={<Navigate to="/talent-hub" replace />} />
+
+            <Route path="/apply" element={<CandidateRoute><CandidateWizard /></CandidateRoute>} />
+            <Route path="/talent-hub" element={<CandidateRoute><TalentHub /></CandidateRoute>} />
             <Route path="/applicant" element={<ApplicantRoute><ApplicantDashboard /></ApplicantRoute>} />
             <Route path="/apply-applicant" element={<ApplicantRoute><ApplicantVideoUpload /></ApplicantRoute>} />
-            <Route path="/founder/dashboard" element={<Navigate to="/founder" replace />} />
+            <Route path="/founder" element={<Navigate to="/talent-hub" replace />} />
+            <Route path="/founder/dashboard" element={<Navigate to="/talent-hub" replace />} />
             <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
             <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
             <Route path="/jobs" element={<Jobs />} />
@@ -90,11 +87,7 @@ const App = () => (
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/edit" element={<EditProfile />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/career-tips" element={<CareerTips />} />
             <Route path="/activity" element={<ActivityLog />} />
-            <Route path="/insights" element={<Insights />} />
             <Route path="/user/:userId" element={<UserProfile />} />
             {/* Employer Routes (protected by EmployerRoute) */}
             <Route path="/employer" element={<EmployerRoute />}>
@@ -117,6 +110,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
+    </SidebarProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

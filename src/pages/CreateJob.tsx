@@ -62,7 +62,6 @@ export default function CreateJob() {
   const [benefitInput, setBenefitInput] = useState('');
   const [benefits, setBenefits] = useState<string[]>([]);
   const [deadline, setDeadline] = useState('');
-  const [videoPrompt, setVideoPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(isEdit);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -244,8 +243,8 @@ export default function CreateJob() {
       {/* Form */}
       <div className="p-4 space-y-6 pb-12">
         <div>
-          <h1 className="text-2xl font-bold">{isEdit ? 'Edit Job Posting' : 'Create Job Posting'}</h1>
-          <p className="text-muted-foreground text-sm">{isEdit ? 'Update your job listing' : 'Find your next hire through video portfolios'}</p>
+          <h1 className="text-2xl font-bold">{isEdit ? 'Edit Vacancy' : 'Create New Job Listing'}</h1>
+          <p className="text-muted-foreground text-sm">{isEdit ? 'Update position details' : 'Attract top talent with a professional job description'}</p>
         </div>
 
         {/* Basic Info */}
@@ -437,20 +436,6 @@ export default function CreateJob() {
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
           />
-        </div>
-
-        {/* Video Pitch Guidance — HR instructions shown to applicants when applying */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Video Pitch Guidance <span className="text-muted-foreground text-xs">(optional)</span></label>
-          <p className="text-xs text-muted-foreground">Tell applicants what to include in their video pitch. This will be shown when they apply.</p>
-          <Textarea
-            placeholder="e.g. In your 1-minute video, please include: your name, relevant experience, why you're interested in this role, and a brief example of a project you're proud of."
-            value={videoPrompt}
-            onChange={(e) => setVideoPrompt(e.target.value)}
-            rows={4}
-            maxLength={1000}
-          />
-          <p className="text-xs text-muted-foreground text-right">{videoPrompt.length}/1,000</p>
         </div>
       </div>
     </div>

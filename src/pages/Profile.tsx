@@ -127,8 +127,16 @@ export default function Profile() {
   const stats = {
     views: userVideos.reduce((acc, v) => acc + (v.views || 0), 0),
     likes: userVideos.reduce((acc, v) => acc + (v.likes || 0), 0),
-    videos: userVideos.length,
+    projects: userVideos.length,
   };
+
+  const profileCompletion = [
+    !!profile?.username,
+    !!profile?.bio,
+    !!(profile?.skills && profile.skills.length > 0),
+    !!profile?.avatar,
+    userVideos.length > 0
+  ].filter(Boolean).length * 20;
 
   const formatNumber = (num: number): string => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -261,8 +269,8 @@ export default function Profile() {
             <div className="flex-1">
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="neo-subtle p-4 rounded-2xl text-center">
-                  <p className="text-2xl font-bold text-charcoal">{stats.videos}</p>
-                  <p className="text-xs text-cool-grey">Videos</p>
+                  <p className="text-2xl font-bold text-charcoal">{stats.projects}</p>
+                  <p className="text-xs text-cool-grey">Projects</p>
                 </div>
                 <div className="neo-subtle p-4 rounded-2xl text-center">
                   <p className="text-2xl font-bold text-charcoal">{formatNumber(stats.views)}</p>
@@ -274,11 +282,25 @@ export default function Profile() {
                 </div>
               </div>
 
+              {/* Profile Completion */}
+              <div className="mt-4">
+                <div className="flex justify-between items-center mb-1">
+                  <p className="text-xs font-semibold text-cool-grey uppercase tracking-wider">Profile Strength</p>
+                  <p className="text-xs font-bold text-primary">{profileCompletion}%</p>
+                </div>
+                <div className="h-2 w-full bg-secondary/50 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-1000 ease-out" 
+                    style={{ width: `${profileCompletion}%` }}
+                  />
+                </div>
+              </div>
+
               {/* Bio */}
-              <div>
+              <div className="mt-4">
                 <p className="font-medium text-charcoal">{profile?.username || 'Your Name'}</p>
                 <p className="text-sm text-cool-grey mt-1">
-                  {profile?.bio || 'Add a bio to tell employers about yourself'}
+                  {profile?.bio || 'Add a professional summary to tell employers about your expertise'}
                 </p>
               </div>
             </div>
