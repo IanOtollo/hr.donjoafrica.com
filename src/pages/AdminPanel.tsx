@@ -289,7 +289,7 @@ export default function AdminPanel() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 max-w-[1400px] mx-auto w-full overflow-x-hidden px-1 sm:px-0">
+      <div className="space-y-6 w-full overflow-x-hidden p-4 lg:p-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -373,7 +373,7 @@ export default function AdminPanel() {
 
         {/* ============ OVERVIEW TAB ============ */}
         {activeTab === 'overview' && (
-          <div className="space-y-4 max-w-[1400px] mx-auto">
+          <div className="space-y-4">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-16">
                 <RocketLoader indeterminate label="Loading overview..." />

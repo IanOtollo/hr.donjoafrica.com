@@ -34,6 +34,12 @@ export default function EditProfile() {
     }
   }, [profile]);
 
+  useEffect(() => {
+    if (!user && !isSaving && !isUploadingAvatar) {
+      navigate('/');
+    }
+  }, [user, navigate, isSaving, isUploadingAvatar]);
+
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
@@ -99,13 +105,10 @@ export default function EditProfile() {
     }
   };
 
-  if (!user) {
-    navigate('/');
-    return null;
-  }
+  if (!user) return null;
 
   // Wait for profile to load so we don't show empty form on refresh
-  if (user && !profile) {
+  if (!profile) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-muted-foreground animate-pulse">Loading profile...</p>
@@ -144,7 +147,7 @@ export default function EditProfile() {
           />
           <div className="relative">
             <img 
-              src={editAvatar || profile?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'} 
+              src={editAvatar || profile?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.username || user?.email || 'User')}&background=F4F4F5&color=18181B&size=150`} 
               alt={profile?.username || 'User'}
               className="h-24 w-24 rounded-full object-cover border-2 border-border"
             />
@@ -168,7 +171,7 @@ export default function EditProfile() {
         <div className="space-y-2">
           <label className="text-sm font-medium">Username</label>
           <Input
-            placeholder="Your username"
+            placeholder={user?.email?.split('@')[0] || "Your username"}
             value={editUsername}
             onChange={(e) => setEditUsername(e.target.value)}
           />

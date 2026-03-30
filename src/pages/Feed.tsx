@@ -39,7 +39,7 @@ export default function Feed() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 max-w-4xl mx-auto w-full overflow-x-hidden">
+      <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 w-full overflow-x-hidden">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-charcoal mb-2">
             Welcome, {profile?.username || user?.email?.split('@')[0] || 'User'}

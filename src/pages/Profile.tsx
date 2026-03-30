@@ -236,7 +236,7 @@ export default function Profile() {
         {/* Profile Header */}
         <NeoCard className="p-8">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-xl font-semibold text-charcoal">@{profile?.username || 'user'}</h1>
+            <h1 className="text-xl font-semibold text-charcoal">@{profile?.username || user?.email?.split('@')[0] || 'user'}</h1>
             <div className="flex items-center gap-2">
               <button onClick={refreshStats} className="neo-subtle p-2 rounded-xl hover:neo-pressed transition-all" title="Refresh stats">
                 <RefreshCw className="h-5 w-5 text-cool-grey" />
@@ -254,7 +254,7 @@ export default function Profile() {
             {/* Avatar */}
             <div className="relative">
               <img 
-                src={profile?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'} 
+                src={profile?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.username || user?.email || 'User')}&background=F4F4F5&color=18181B&size=150`} 
                 alt={profile?.username || 'User'}
                 className="h-24 w-24 rounded-3xl object-cover neo-extruded"
               />
@@ -298,7 +298,7 @@ export default function Profile() {
 
               {/* Bio */}
               <div className="mt-4">
-                <p className="font-medium text-charcoal">{profile?.username || 'Your Name'}</p>
+                <p className="font-medium text-charcoal">{profile?.username || user?.email?.split('@')[0] || 'Your Name'}</p>
                 <p className="text-sm text-cool-grey mt-1">
                   {profile?.bio || 'Add a professional summary to tell employers about your expertise'}
                 </p>
