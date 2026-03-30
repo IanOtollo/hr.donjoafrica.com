@@ -587,8 +587,8 @@ export default function AdminPanel() {
                 <NeoCard className="p-6 rounded-sm pointer-events-auto">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">Metric Cards</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
-                    <MetricCard label="Profile Completion" value={allVentures?.filter((v) => v.founder_name && v.pitch_video_url).length ?? 0} max={allVentures?.length ?? 1} change={12.2} />
-                    <MetricCard label="Video Quality Score" value={shortlistedCount * 10} max={(allVentures?.length ?? 0) * 10 || 100} change={-2.4} />
+                    <MetricCard label="Profile Completion" value={allVentures?.filter((v) => v.founder_name && v.pitch_video_url).length ?? 0} max={allVentures?.length || 1} change={12.2} />
+                    <MetricCard label="Video Quality Score" value={shortlistedCount * 10} max={(allVentures?.length || 10) * 10} change={-2.4} />
                   </div>
                 </NeoCard>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

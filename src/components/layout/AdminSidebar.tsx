@@ -30,7 +30,6 @@ const adminNavItems: NavItem[] = [
   { icon: Briefcase, label: 'CMS (Job Postings)', path: '/employer' },
   { icon: UserCog, label: 'User Management', path: '/admin?tab=review' },
   { icon: BarChart3, label: 'Analytics', path: '/admin?tab=analytics' },
-  { icon: Megaphone, label: 'Announcements', path: '/admin?tab=overview' },
   { icon: Settings, label: 'Platform Settings', path: '/employer/settings' },
 ];
 
