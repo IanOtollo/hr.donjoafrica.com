@@ -6,7 +6,7 @@ import { StatCard } from '@/components/dashboard/StatCard';
 import { 
   Users, FileText, Play, CheckCircle, X,
   Calendar, Award, Loader2, AlertCircle, ArrowRight, Download, Eye, Rocket,
-  GitCompare, Sparkles, Briefcase
+  GitCompare, Sparkles, Briefcase, Megaphone
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
