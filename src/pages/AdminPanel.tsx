@@ -21,7 +21,7 @@ import { TalentPipelineCard } from '@/components/admin/TalentPipelineCard';
 import { SmartFilters } from '@/components/admin/SmartFilters';
 import { SystemHealthGauge, EngagementFluxChart, MetricCard, PipelineVelocityGauge, SkillRadarChart, GeospatialHeatmap, ApplicationVelocityChart } from '@/components/admin/MedicalChicAnalytics';
 
-type Tab = 'overview' | 'pipeline' | 'analytics' | 'review';
+type Tab = 'overview' | 'analytics' | 'review';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -272,7 +272,6 @@ export default function AdminPanel() {
 
   const tabs: { id: Tab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
-    { id: 'pipeline', label: 'Talent Pipeline' },
     { id: 'analytics', label: 'Analytics' },
     { id: 'review', label: `Review Queue (${pendingCount})` },
   ];
@@ -325,51 +324,6 @@ export default function AdminPanel() {
           ))}
         </div>
 
-        {/* ============ TALENT PIPELINE TAB ============ */}
-        {activeTab === 'pipeline' && (
-          <div className="space-y-4">
-            <SmartFilters
-              search={search}
-              onSearchChange={setSearch}
-              stageFilter={stageFilter}
-              onStageChange={setStageFilter}
-              statusFilter={statusFilter}
-              onStatusChange={setStatusFilter}
-              scoreFilter={scoreFilter}
-              onScoreChange={setScoreFilter}
-              industryTags={industryTags}
-              selectedIndustry={selectedIndustry}
-              onIndustryChange={setSelectedIndustry}
-              totalResults={filteredVentures.length}
-            />
-
-            {isLoading ? (
-              <div className="flex justify-center py-16">
-                <RocketLoader indeterminate label="Loading pipeline..." />
-              </div>
-            ) : filteredVentures.length === 0 ? (
-              <NeoCard className="p-8 text-center">
-                <p className="text-muted-foreground">No candidates match your filters.</p>
-              </NeoCard>
-            ) : (
-              <div className="space-y-3">
-                {filteredVentures.map((venture) => (
-                  <TalentPipelineCard
-                    key={venture.id}
-                    venture={venture}
-                    review={reviewsByVenture[venture.id]}
-                    aiLoading={aiLoadingIds.has(venture.id)}
-                    onGenerateAi={handleGenerateAi}
-                    onShortlist={handleShortlist}
-                    onAddComment={handleAddComment}
-                    onWatchPitch={(url) => setSelectedVideo(url)}
-                    onScheduleInterview={handleScheduleInterview}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* ============ OVERVIEW TAB ============ */}
         {activeTab === 'overview' && (
@@ -390,8 +344,8 @@ export default function AdminPanel() {
                           : '🚀 You have pending reviews to process.'}
                       </span>
                     </div>
-                    <Button size="sm" onClick={() => setActiveTab('pipeline')} className="bg-white text-blue-600 hover:bg-white/90 shrink-0 rounded-sm pointer-events-auto">
-                      Open Pipeline <ArrowRight className="h-4 w-4 ml-1" />
+                    <Button size="sm" onClick={() => setActiveTab('review')} className="bg-white text-blue-600 hover:bg-white/90 shrink-0 rounded-sm pointer-events-auto">
+                      Review Queue <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
                 )}
