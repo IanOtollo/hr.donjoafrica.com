@@ -21,7 +21,7 @@ import { TalentPipelineCard } from '@/components/admin/TalentPipelineCard';
 import { SmartFilters } from '@/components/admin/SmartFilters';
 import { SystemHealthGauge, EngagementFluxChart, MetricCard, PipelineVelocityGauge, SkillRadarChart, GeospatialHeatmap, ApplicationVelocityChart } from '@/components/admin/MedicalChicAnalytics';
 
-type Tab = 'overview' | 'analytics' | 'review';
+type Tab = 'overview' | 'analytics' | 'review' | 'announcements';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -274,6 +274,7 @@ export default function AdminPanel() {
     { id: 'overview', label: 'Overview' },
     { id: 'analytics', label: 'Analytics' },
     { id: 'review', label: `Review Queue (${pendingCount})` },
+    { id: 'announcements', label: 'Announcements' },
   ];
 
   if (error) {
@@ -295,11 +296,13 @@ export default function AdminPanel() {
             <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">
               {activeTab === 'overview' ? 'Admin Dashboard' : 
                activeTab === 'analytics' ? 'Platform Analytics' : 
+               activeTab === 'announcements' ? 'System Announcements' :
                'User Management'}
             </h1>
             <p className="text-muted-foreground text-sm">
               {activeTab === 'overview' ? 'Overview of platform activity and pending reviews.' : 
                activeTab === 'analytics' ? 'System health and engagement metrics.' : 
+               activeTab === 'announcements' ? 'Broadcast messages and updates to all platform users.' :
                'Review, rate, and shortlist candidates with AI-powered insights.'}
             </p>
           </div>
@@ -631,6 +634,63 @@ export default function AdminPanel() {
                 </NeoCard>
               </>
             )}
+          </div>
+        )}
+
+        {/* Announcements Tab */}
+        {activeTab === 'announcements' && (
+          <div className="space-y-6 max-w-4xl max-w-full">
+            <NeoCard className="p-6 lg:p-8 rounded-sm pointer-events-auto">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-12 w-12 neo-pressed rounded-2xl flex items-center justify-center shrink-0">
+                  <Megaphone className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-charcoal">New Announcement Broadcast</h3>
+                  <p className="text-sm text-cool-grey">Draft and push a global alert to all active users on the platform.</p>
+                </div>
+              </div>
+              
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-charcoal mb-2">Subject Line</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g., Scheduled Platform Maintenance" 
+                    className="w-full bg-white/50 border border-border/50 rounded-xl px-4 py-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-charcoal mb-2">Audience Target</label>
+                  <select className="w-full bg-white/50 border border-border/50 rounded-xl px-4 py-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                    <option value="all">Global (Employers & Applicants)</option>
+                    <option value="employers">Employers Only</option>
+                    <option value="applicants">Applicants Only</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-charcoal mb-2">Message Body</label>
+                  <textarea 
+                    rows={5}
+                    placeholder="Compose your broadcast message here..." 
+                    className="w-full bg-white/50 border border-border/50 rounded-xl px-4 py-3 text-charcoal focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-y"
+                  ></textarea>
+                </div>
+                <div className="pt-2 flex justify-end gap-3">
+                  <Button variant="outline" className="neo-subtle rounded-sm">Save Draft</Button>
+                  <Button className="bg-primary hover:bg-primary/90 text-white rounded-sm px-6" onClick={() => toast.success('Announcement broadcast published globally.')}>
+                    <Megaphone className="h-4 w-4 mr-2" /> Push Broadcast
+                  </Button>
+                </div>
+              </div>
+            </NeoCard>
+            
+            <NeoCard className="p-6 rounded-sm pointer-events-auto opacity-75">
+              <h4 className="text-sm font-semibold text-charcoal mb-4 uppercase tracking-wider">Recent Broadcasts</h4>
+              <div className="text-center py-8 text-cool-grey text-sm">
+                No previous announcements found in the database.
+              </div>
+            </NeoCard>
           </div>
         )}
 
