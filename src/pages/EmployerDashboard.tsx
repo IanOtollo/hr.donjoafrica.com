@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 const chartData = [4, 7, 5, 9, 6, 8, 10, 7, 6, 9, 11, 8];
 
-interface EmployerJob { id: string; title: string; company_name: string | null; is_active: boolean }
+interface EmployerJob { id: string; slug?: string | null; title: string; company_name: string | null; is_active: boolean }
 interface EmployerChallenge { id: string; title: string; is_active: boolean }
 
 export default function EmployerDashboard() {
@@ -26,16 +26,17 @@ export default function EmployerDashboard() {
     const uid = user?.id ?? profile?.id;
     if (!uid) return;
     const load = async () => {
-      const { data: jobs } = await supabase.from('job_postings').select('id, title, company_name, is_active').eq('employer_id', uid).order('created_at', { ascending: false });
-      setMyJobs(jobs ?? []);
+      const { data: jobs } = await supabase.from('job_postings').select('id, slug, title, company_name, is_active' as any).eq('employer_id', uid).order('created_at', { ascending: false });
+      setMyJobs((jobs as any) ?? []);
       const { data: challenges } = await supabase.from('challenges').select('id, title, is_active').eq('employer_id', uid).order('created_at', { ascending: false });
       setMyChallenges(challenges ?? []);
     };
     load();
   }, [user?.id, profile?.id]);
   
-  const handleShareLink = (jobId: string) => {
-    const url = `${window.location.origin}/jobs/${jobId}`;
+  const handleShareLink = (job: EmployerJob) => {
+    const finalLink = job.slug || job.id;
+    const url = `${window.location.origin}/jobs/${finalLink}`;
     navigator.clipboard.writeText(url)
       .then(() => toast.success('Job link copied! Share this with applicants to let them apply directly.'))
       .catch((err) => toast.error('Failed to copy link.'));
@@ -134,7 +135,7 @@ export default function EmployerDashboard() {
                       <p className="text-xs text-cool-grey">{job.company_name || '—'}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => handleShareLink(job.id)} title="Copy shareable job link">
+                      <Button variant="ghost" size="sm" onClick={() => handleShareLink(job)} title="Copy shareable job link">
                         <Share2 className="h-4 w-4 text-emerald-500" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => navigate(`/employer/jobs/${job.id}/applicants`)} title="View Applicants">

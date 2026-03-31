@@ -168,6 +168,17 @@ export default function CreateJob() {
         return isNaN(n) ? null : n;
       };
 
+      const generateSlug = (jobTitle: string, jobLocation?: string) => {
+        const base = `${jobTitle} ${jobLocation || ''}`.trim().toLowerCase()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/[\s_-]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        const randomId = Math.random().toString(36).substring(2, 6);
+        return `${base}-${randomId}`;
+      };
+
+      const slug = generateSlug(validation.data.title, validation.data.location || '');
+
       if (isEdit && jobId) {
         const { error } = await supabase
           .from('job_postings')
@@ -184,7 +195,8 @@ export default function CreateJob() {
             skills_required: validation.data.skills_required,
             benefits: validation.data.benefits,
             application_deadline: deadline || null,
-          })
+            slug: slug,
+          } as any)
           .eq('id', jobId)
           .eq('employer_id', user?.id);
         if (error) throw error;
@@ -204,7 +216,8 @@ export default function CreateJob() {
           skills_required: validation.data.skills_required,
           benefits: validation.data.benefits,
           application_deadline: deadline || null,
-        });
+          slug: slug,
+        } as any);
         if (error) throw error;
         toast.success('Job posting created!', { icon: null });
       }

@@ -83,8 +83,8 @@ const App = () => (
             <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
             <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
             <Route path="/jobs" element={<Jobs />} />
-            <Route path="/jobs/:jobId" element={<JobDetail />} />
-            <Route path="/jobs/:jobId/apply" element={<ApplicantRoute><JobDetail /></ApplicantRoute>} />
+            <Route path="/jobs/:identifier" element={<JobDetail />} />
+            <Route path="/jobs/:identifier/apply" element={<ApplicantRoute><JobDetail /></ApplicantRoute>} />
             <Route path="/challenges" element={<Challenges />} />
             <Route path="/create" element={<Create />} />
             <Route path="/notifications" element={<Notifications />} />

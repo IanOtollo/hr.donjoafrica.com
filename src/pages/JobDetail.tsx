@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 interface JobPosting {
   id: string;
+  slug?: string | null;
   title: string;
   description: string;
   company_name: string | null;
@@ -26,7 +27,7 @@ interface JobPosting {
 }
 
 export default function JobDetail() {
-  const { jobId } = useParams<{ jobId: string }>();
+  const { identifier } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user } = useAuth();
@@ -44,10 +45,10 @@ export default function JobDetail() {
   const isDeepLinkedApply = location.pathname.endsWith('/apply');
 
   useEffect(() => {
-    if (jobId) {
+    if (identifier) {
       fetchJob();
     }
-  }, [jobId]);
+  }, [identifier]);
 
   useEffect(() => {
     if (user && job) {
@@ -63,11 +64,18 @@ export default function JobDetail() {
     setIsLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase
-        .from('job_postings')
-        .select('*')
-        .eq('id', jobId)
-        .single();
+      // We check if the identifier is a valid UUID, otherwise we assume it's a slug
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier ?? '');
+      
+      let query: any = supabase.from('job_postings').select('*');
+      
+      if (isUUID) {
+        query = query.eq('id', identifier);
+      } else {
+        query = query.eq('slug', identifier);
+      }
+
+      const { data, error } = await query.single();
 
       if (error) throw error;
       setJob(data);
@@ -100,7 +108,8 @@ export default function JobDetail() {
   const handleApplyClick = () => {
     if (!isAuthenticated) {
       // Deep Link Redirect: Send them to auth, and upon success back to the specific apply route!
-      navigate(`/auth?returnTo=/jobs/${job?.id}/apply`);
+      const finalLink = job?.slug || job?.id;
+      navigate(`/auth?returnTo=/jobs/${finalLink}/apply`);
       return;
     }
     // Already authenticated? Open the modal natively here
