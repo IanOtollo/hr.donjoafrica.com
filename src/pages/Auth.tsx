@@ -58,6 +58,17 @@ export default function Auth() {
 
   // Track if user just logged in (to trigger redirect)
   const [justLoggedIn, setJustLoggedIn] = useState(false);
+  
+  // URL Deep Link tracking
+  const [returnTo, setReturnTo] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const rt = params.get('returnTo');
+    if (rt) {
+      setReturnTo(rt);
+    }
+  }, [location.search]);
 
   // Prefill username from Google OAuth user metadata
   useEffect(() => {
@@ -82,9 +93,15 @@ export default function Auth() {
       // Redirect when: just logged in, OAuth callback, or profile loaded (with role)
       const shouldRedirect = justLoggedIn || location.search.includes('code=') || location.hash.includes('access_token');
       if (shouldRedirect && profile) {
-        const destination = isHardcodedAdmin(user?.email) || (profile.user_type === 'employer' || profile.user_type === 'investor') ? '/admin' : 
-                          profile.user_type === 'founder' ? '/founder' : 
-                          profile.user_type === 'talent' ? '/feed' : '/feed';
+        let destination = returnTo || '/feed';
+        
+        // Only use default role-based routing if no returnTo deep link
+        if (!returnTo) {
+           destination = isHardcodedAdmin(user?.email) || (profile.user_type === 'employer' || profile.user_type === 'investor') ? '/admin' : 
+                         profile.user_type === 'founder' ? '/founder' : 
+                         profile.user_type === 'talent' ? '/feed' : '/feed';
+        }
+        
         navigate(destination, { replace: true });
         setJustLoggedIn(false);
         return;
@@ -463,156 +480,154 @@ export default function Auth() {
   );
 
   const renderLoginSignup = () => (
-      <div className="min-h-screen flex flex-col animate-fade-in">
-        {/* Header - design1 layout */}
-        <div className="flex items-center justify-between px-6 py-4 gap-4">
+      <div className="min-h-screen flex flex-col animate-fade-in relative overflow-hidden bg-background">
+        <AuthBackground />
+        
+        {/* Header - Formal & Integrated */}
+        <div className="absolute top-0 left-0 w-full flex items-center justify-between px-6 py-6 gap-4 z-50">
           <button
             type="button"
             onClick={() => setStep('welcome')}
-            className="glass-panel px-4 py-2.5 text-sm font-medium text-[#1e293b] hover:opacity-90 pointer-events-auto"
+            className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-secondary/80 backdrop-blur-md border border-border/50 text-sm font-medium text-charcoal hover:bg-secondary transition-all pointer-events-auto shadow-sm"
           >
-            ← Back
+            <ChevronLeft className="h-4 w-4 text-cool-grey group-hover:text-charcoal transition-colors" />
+            Back
           </button>
-          <div className="flex-1 flex justify-center">
-            <div className="relative">
-              <select className="glass-panel px-4 py-2.5 text-sm font-medium text-[#1e293b] appearance-none cursor-pointer pointer-events-auto bg-transparent pr-8 min-w-[120px]" defaultValue="en">
-                <option value="en">English</option>
+          
+          <div className="flex-1 flex justify-end">
+            <div className="relative pointer-events-auto">
+              <select className="appearance-none bg-secondary/80 backdrop-blur-md border border-border/50 rounded-full pl-5 pr-10 py-2.5 text-sm font-medium text-charcoal focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer shadow-sm">
+                <option value="en">English (US)</option>
+                <option value="uk">English (UK)</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-cool-grey pointer-events-none" />
             </div>
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 max-w-md mx-auto w-full">
-          <div className="glass-panel w-full p-8 rounded-2xl space-y-6">
-          {/* Avatar / Logo - design1 central */}
-          <div className="mb-4 flex justify-center">
-            <div className="w-20 h-20 glass-panel rounded-full flex items-center justify-center p-1 ring-2 ring-white/40">
-              <Logo size="lg" className="object-contain" />
-            </div>
-          </div>
-
-          <div className="w-full space-y-4">
-            {/* Phone number, email or username */}
-            <div className="space-y-1.5">
-              <label className="text-sm text-slate-600">Phone number, email or username</label>
-              <div className="glass-panel rounded-[2px]">
-                <Input
-                  type="email"
-                  placeholder=""
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 rounded-[2px] border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 pl-4"
-                />
+        <div className="flex-1 flex flex-col items-center justify-center px-6 py-20 max-w-md mx-auto w-full z-10">
+          <div className="soft-ui-card w-full p-8 space-y-6">
+            {/* Avatar / Logo - design1 central */}
+            <div className="mb-4 flex justify-center">
+              <div className="w-20 h-20 bg-white/50 backdrop-blur-md rounded-full flex items-center justify-center p-1 shadow-inner border border-white/60">
+                <Logo size="lg" className="object-contain" />
               </div>
             </div>
 
-            {/* Password */}
-            <div className="space-y-1.5">
-              <label className="text-sm text-slate-600">Password</label>
-              <div className="glass-panel rounded-[2px] relative">
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder=""
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 rounded-[2px] border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 pl-4 pr-12"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 pointer-events-auto"
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
+            <div className="w-full space-y-4">
+              {/* Phone number, email or username */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-charcoal">Email Address</label>
+                <div className="relative">
+                  <Input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-12 rounded-xl border border-border/50 bg-white/50 backdrop-blur-sm shadow-sm focus-visible:ring-1 focus-visible:ring-primary/30 pl-4 font-medium"
+                  />
+                </div>
               </div>
-              {!isLogin && <PasswordStrengthIndicator password={password} />}
-            </div>
 
-            {/* Log in - Emerald-500 for success/active */}
-            <Button
-              variant="default"
-              className="w-full h-14 rounded-[2px] bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-none border-0 mt-4"
-              onClick={handleAuth}
-              disabled={loading || !email || !password}
-            >
-              {loading ? 'Loading...' : isLogin ? 'Log in' : 'Continue'}
-              {!loading && <ArrowRight className="h-5 w-5 ml-2" />}
-            </Button>
+              {/* Password */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-charcoal">Password</label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-12 rounded-xl border border-border/50 bg-white/50 backdrop-blur-sm shadow-sm focus-visible:ring-1 focus-visible:ring-primary/30 pl-4 pr-12 font-medium tracking-wider"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-cool-grey hover:text-charcoal pointer-events-auto transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {!isLogin && <PasswordStrengthIndicator password={password} />}
+              </div>
 
-            {/* Forgot your login details? Get help login in. */}
-            {isLogin && (
-              <p className="text-center text-sm text-slate-600 mt-2">
-                Forgot your login details?{' '}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setResetEmail(email);
-                    setResetEmailSent(false);
-                    setStep('forgotPassword');
-                  }}
-                  className="font-medium text-slate-800 hover:text-emerald-600 pointer-events-auto"
-                >
-                  Get help login in.
-                </button>
-              </p>
-            )}
-
-            {/* Biometric - Fingerprint icon (WebAuthn + password fallback) */}
-            <div className="flex justify-center py-4">
-              <button
-                type="button"
-                onClick={handleBiometricClick}
-                disabled={bioLoading}
-                className="w-16 h-16 glass-panel rounded-[2px] flex items-center justify-center text-[#64748b] hover:text-emerald-500 transition-colors pointer-events-auto disabled:opacity-50"
+              {/* Log in Button */}
+              <Button
+                variant="default"
+                className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-md mt-4 pointer-events-auto transition-all"
+                onClick={handleAuth}
+                disabled={loading || !email || !password}
               >
-                {bioLoading ? <Loader2 className="h-8 w-8 animate-spin" /> : <Fingerprint className="h-8 w-8" />}
-              </button>
-            </div>
+                {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : isLogin ? 'Sign In' : 'Create Account'}
+                {!loading && <ArrowRight className="h-5 w-5 ml-2" />}
+              </Button>
 
-            {/* Don't have an account? Sign up */}
-            <p className="text-center text-sm text-slate-600 pt-2">
-              {isLogin ? "Don't have an account? " : 'Already have an account? '}
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="font-medium text-slate-800 hover:text-emerald-600 pointer-events-auto"
-              >
-                {isLogin ? 'Sign up' : 'Sign in'}
-              </button>
-            </p>
-          </div>
-
-          </div>
-          {/* Google Sign In - below main form, secondary */}
-          <div className="mt-6 w-full">
-            <div className="relative py-2">
-              <span className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-300" />
-              </span>
-              <span className="relative flex justify-center text-xs uppercase">
-                <span className="px-2 text-[#64748b]">or continue with</span>
-              </span>
-            </div>
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full mt-4 rounded-[2px] glass-panel"
-              onClick={handleGoogleSignIn}
-              disabled={loading || googleLoading}
-            >
-              {googleLoading ? (
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-              ) : (
-                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                  <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                </svg>
+              {/* Forgot login */}
+              {isLogin && (
+                <p className="text-center text-sm text-cool-grey mt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResetEmail(email);
+                      setResetEmailSent(false);
+                      setStep('forgotPassword');
+                    }}
+                    className="font-medium text-charcoal hover:text-primary pointer-events-auto transition-colors"
+                  >
+                    Forgot your password?
+                  </button>
+                </p>
               )}
-              {googleLoading ? 'Connecting...' : 'Continue with Google'}
-            </Button>
+
+              {/* Biometric */}
+              <div className="flex justify-center py-4">
+                <button
+                  type="button"
+                  onClick={handleBiometricClick}
+                  disabled={bioLoading}
+                  className="w-16 h-16 bg-secondary/50 rounded-2xl flex items-center justify-center text-cool-grey hover:text-primary hover:shadow-sm hover:bg-secondary transition-all pointer-events-auto disabled:opacity-50"
+                  title="Sign in with Passkey / Fingerprint"
+                >
+                  {bioLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : <Fingerprint className="h-8 w-8" />}
+                </button>
+              </div>
+
+              {/* Sign up toggle */}
+              <div className="pt-2 border-t border-border/30">
+                <p className="text-center text-sm text-cool-grey mt-4">
+                  {isLogin ? "New to Fuse? " : 'Already have an account? '}
+                  <button
+                    type="button"
+                    onClick={() => setIsLogin(!isLogin)}
+                    className="font-semibold text-charcoal hover:text-primary pointer-events-auto transition-colors"
+                  >
+                    {isLogin ? 'Sign up' : 'Sign in'}
+                  </button>
+                </p>
+              </div>
+            </div>
+
+            {/* Google Sign In */}
+            <div className="mt-4 pt-4 w-full">
+              <Button
+                variant="outline"
+                className="w-full h-12 rounded-xl bg-white/80 hover:bg-white text-charcoal shadow-sm border border-border/50 font-medium pointer-events-auto transition-all"
+                onClick={handleGoogleSignIn}
+                disabled={loading || googleLoading}
+              >
+                {googleLoading ? (
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                ) : (
+                  <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                  </svg>
+                )}
+                Continue with Google
+              </Button>
+            </div>
           </div>
         </div>
       </div>

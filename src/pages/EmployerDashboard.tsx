@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Briefcase, Plus, Trophy, TrendingUp, Edit2, Users } from 'lucide-react';
+import { Settings, Briefcase, Plus, Trophy, TrendingUp, Edit2, Users, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { NeoCard, NeoCardHeader, NeoCardTitle, NeoCardContent } from '@/components/ui/neo-card';
 import { StatCard } from '@/components/dashboard/StatCard';
@@ -32,6 +33,13 @@ export default function EmployerDashboard() {
     };
     load();
   }, [user?.id, profile?.id]);
+  
+  const handleShareLink = (jobId: string) => {
+    const url = `${window.location.origin}/jobs/${jobId}`;
+    navigator.clipboard.writeText(url)
+      .then(() => toast.success('Job link copied! Share this with applicants to let them apply directly.'))
+      .catch((err) => toast.error('Failed to copy link.'));
+  };
   
   return (
     <DashboardLayout>
@@ -126,10 +134,13 @@ export default function EmployerDashboard() {
                       <p className="text-xs text-cool-grey">{job.company_name || '—'}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => navigate(`/employer/jobs/${job.id}/applicants`)}>
+                      <Button variant="ghost" size="sm" onClick={() => handleShareLink(job.id)} title="Copy shareable job link">
+                        <Share2 className="h-4 w-4 text-emerald-500" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => navigate(`/employer/jobs/${job.id}/applicants`)} title="View Applicants">
                         <Users className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => navigate(`/employer/jobs/${job.id}/edit`)}>
+                      <Button variant="ghost" size="sm" onClick={() => navigate(`/employer/jobs/${job.id}/edit`)} title="Edit Job">
                         <Edit2 className="h-4 w-4" />
                       </Button>
                     </div>
