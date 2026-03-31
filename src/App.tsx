@@ -15,6 +15,7 @@ import { EmployerRoute } from "@/components/auth/EmployerRoute";
 import { AuthProvider } from "@/context/AuthContext";
 import { SidebarProvider } from '@/context/SidebarContext';
 import { PWAUpdatePrompt } from "@/components/pwa/PWAUpdatePrompt";
+import { Analytics } from "@vercel/analytics/react";
 import Index from "./pages/Index";
 import Feed from "./pages/Feed";
 import Jobs from "./pages/Jobs";
@@ -56,6 +57,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <PWAUpdatePrompt />
+        <Analytics />
         <BrowserRouter>
           <OrganicBackground />
           <ErrorBoundary>
