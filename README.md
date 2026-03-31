@@ -76,4 +76,31 @@ This repository is optimized for deployment on Vercel. A custom `vercel.json` is
 
 ## 🤝 Contribution Guidelines
 
-Please ensure that any UI changes strictly adhere to the established "Neo-Chic" aesthetic (glassmorphism, no aggressive centering on dashboards, and maintaining mobile single-column integrity). 
+Please ensure that any UI changes strictly adhere to the established "Neo-Chic" aesthetic (glassmorphism, no aggressive centering on dashboards, and maintaining mobile single-column integrity).
+
+## 📁 Project Structure
+
+Below is an ordered map of the primary files and folders driving this platform:
+
+```text
+hr.donjoafrica.com/
+├── public/                  # Static assets (favicons, logos)
+├── src/
+│   ├── components/          # Reusable UI Blocks 
+│   │   ├── admin/           # Admin Dashboard specific components (Analytics, Pipeline)
+│   │   ├── dashboard/       # Stat cards, quick-action widgets
+│   │   ├── layout/          # Global wrappers (AdminSidebar, DashboardTopBar)
+│   │   └── ui/              # Shadcn primitive elements (buttons, dialogs, toasts)
+│   ├── context/             # Global React Contexts (AuthContext, SidebarContext)
+│   ├── hooks/               # Custom React Hooks for Supabase Data Fetching
+│   ├── lib/                 # Utilities (Tailwind merge, formatting scripts)
+│   ├── pages/               # Core Route Views (AdminPanel, Profile, Feed, Auth)
+│   ├── App.tsx              # Main Application Router & Provider Tree
+│   └── index.css            # Global Tailwind/CSS Variables (Neo-Chic Tokens)
+├── supabase/                # Database schemas & Edge Functions (if applicable)
+├── vercel.json              # Vercel Deployment Configuration (SPA Routing Rule)
+├── tailwind.config.ts       # Design System tokens & plugins
+├── vite.config.ts           # Bundler config
+├── package.json             # NPM dependencies & scripts
+└── README.md                # Documentation (You are here)
+``` 
